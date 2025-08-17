@@ -1,0 +1,58 @@
+# Survey Control Guide
+
+## How to Control Survey Access
+
+The survey website now has built-in access control. Here's how it works:
+
+### Default State (Survey Closed)
+- **URL**: `https://nafaverse-survey-web-o1d6.bolt.host`
+- **Shows**: Survey closed page with thank you message
+- **Use**: When you want to close the survey to new responses
+
+### Active Survey State
+- **URL**: `https://nafaverse-survey-web-o1d6.bolt.host?active=true`
+- **Shows**: Full survey form and landing page
+- **Use**: When you want to collect responses
+
+## How to Switch Between States
+
+### To Close the Survey:
+1. Share the regular URL: `https://nafaverse-survey-web-o1d6.bolt.host`
+2. Users will see the "Survey is Closed" page
+
+### To Open the Survey:
+1. Share the URL with parameter: `https://nafaverse-survey-web-o1d6.bolt.host?active=true`
+2. Users can access the full survey
+
+## Use Cases
+
+### During Data Collection Phase:
+- Use `?active=true` URL for social media, emails, and marketing
+- Survey is fully functional and collects responses
+
+### After Data Collection:
+- Switch to regular URL (remove `?active=true`)
+- Shows professional "thank you" message
+- Maintains your brand presence
+- Explains what happens next with the data
+
+### Future Surveys:
+- Simply add `?active=true` to reactivate the same survey
+- No code changes needed
+- Instant control over survey availability
+
+## Benefits
+
+1. **Professional Appearance**: Closed page maintains brand image
+2. **Clear Communication**: Users understand survey status
+3. **Easy Control**: No code deployment needed to open/close
+4. **Future Flexibility**: Can reactivate anytime
+5. **SEO Friendly**: Page remains live and indexed
+
+## Example Usage
+
+```
+Marketing Email: "Take our survey: https://nafaverse-survey-web-o1d6.bolt.host?active=true"
+Social Media: "Help us build NafaVerse: https://nafaverse-survey-web-o1d6.bolt.host?active=true"
+After Closing: All links automatically show closed page
+```

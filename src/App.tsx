@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
 import { ChevronRight, Shield, Users, TrendingUp, Award, CheckCircle } from 'lucide-react';
 import SurveyForm from './components/SurveyForm';
+import SurveyClosedPage from './components/SurveyClosedPage';
 
 function App() {
+  // Survey control - set to false to show closed page, true to show survey
+  const isSurveyActive = new URLSearchParams(window.location.search).get('active') === 'true';
+  
   const [showSurvey, setShowSurvey] = useState(false);
+
+  // If survey is not active, show closed page
+  if (!isSurveyActive) {
+    return <SurveyClosedPage />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
