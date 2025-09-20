@@ -21,6 +21,70 @@ export const LoginModal: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Validation state
+  type Errs = { username: string; email: string; password: string; confirmPassword: string };
+  const [errors, setErrors] = useState<Errs>({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+
+  // Validators
+  const usernameRegex = /^(?!\d)[A-Za-z][A-Za-z0-9_]{4,29}$/; // >=5 chars, first letter, no starting digit
+  const emailRegex = /^(?!\d)[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/; // first char not digit + email
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])(?!.*\s).{8,72}$/; // 8+ with lower, upper, digit, special, no spaces
+
+  const validateField = (name: keyof typeof formData, value: string): string => {
+    switch (name) {
+      case 'username':
+        if (!value) return 'Username is required.';
+        if (value.length < 5) return 'Username must be at least 5 characters.';
+        if (!usernameRegex.test(value)) return 'Username must start with a letter and only include letters, numbers, or _.';
+        return '';
+      case 'email':
+        if (!value) return 'Email is required.';
+        if (!emailRegex.test(value)) return 'Please enter a valid email (cannot start with a digit).';
+        return '';
+      case 'password':
+        if (!value) return 'Password is required.';
+        if (!passwordRegex.test(value)) {
+          return 'Password must be 8+ chars and include upper, lower, digit, and special character.';
+        }
+        return '';
+      case 'confirmPassword':
+        if (!value) return 'Confirm your password.';
+        if (value !== formData.password) return 'Passwords do not match.';
+        return '';
+      default:
+        return '';
+    }
+  };
+
+  const validateAll = (): Errs => {
+    const next: Errs = {
+      username: isLoginMode ? '' : validateField('username', formData.username),
+      email: validateField('email', formData.email),
+      password: validateField('password', formData.password),
+      confirmPassword: isLoginMode ? '' : validateField('confirmPassword', formData.confirmPassword)
+    };
+    setErrors(next);
+    return next;
+  };
+
+  const hasErrors = (e: Errs) => !!(e.username || e.email || e.password || e.confirmPassword);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target as { name: keyof typeof formData; value: string };
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    // live-validate the field changed
+    setErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
+    if (name === 'password' && !isLoginMode) {
+      // re-check confirm password when password changes
+      setErrors((prev) => ({ ...prev, confirmPassword: validateField('confirmPassword', formData.confirmPassword) }));
+    }
+  };
+
   const content = {
     en: {
       loginTitle: 'Welcome back to NafaVerse',
@@ -68,23 +132,19 @@ export const LoginModal: React.FC = () => {
 
   if (!loginModalOpen) return null;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    const v = validateAll();
+    if (hasErrors(v)) {
+      toast.error('Please fix the highlighted fields.', { position: 'top-center' });
+      return;
+    }
     setLoading(true);
     try {
       if (isLoginMode) {
         await apiService.login({ email: formData.email, password: formData.password });
       } else {
-        if (formData.password !== formData.confirmPassword) {
-          setError('Passwords do not match');
-          setLoading(false);
-          return;
-        }
         await apiService.signup({ username: formData.username, email: formData.email, password: formData.password });
       }
       refreshAuthFromStorage();
@@ -93,7 +153,8 @@ export const LoginModal: React.FC = () => {
         setLoginModalOpen(false);
         setFormData(initialForm);
         setShowPassword(false);
-      }, 1200);
+        setErrors({ username: '', email: '', password: '', confirmPassword: '' });
+      }, 1000);
     } catch (err: any) {
       if (err?.response?.status === 401) {
         toast.error('Invalid email or password.', { position: 'top-center' });
@@ -119,7 +180,20 @@ export const LoginModal: React.FC = () => {
     setError('');
     setFormData(initialForm);
     setShowPassword(false);
+    setErrors({ username: '', email: '', password: '', confirmPassword: '' });
   };
+
+  const canSubmit =
+    isLoginMode
+      ? !!formData.email && !!formData.password && !errors.email && !errors.password
+      : !!formData.username &&
+        !!formData.email &&
+        !!formData.password &&
+        !!formData.confirmPassword &&
+        !errors.username &&
+        !errors.email &&
+        !errors.password &&
+        !errors.confirmPassword;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -145,7 +219,7 @@ export const LoginModal: React.FC = () => {
 
             {/* Form */}
             <div className="p-6">
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4" noValidate>
                 {!isLoginMode && (
                   <div>
                     <label className="block text-sm font-medium text-slate-200 mb-2">
@@ -157,10 +231,14 @@ export const LoginModal: React.FC = () => {
                         name="username"
                         value={formData.username}
                         onChange={handleChange}
-                        className="w-full pl-4 pr-4 py-3 rounded-xl bg-slate-800/60 border border-slate-700 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
+                        minLength={5}
+                        pattern="(?!\d)[A-Za-z][A-Za-z0-9_]{4,29}"
+                        title="At least 5 characters, start with a letter, letters/numbers/_ only."
+                        className={`w-full pl-4 pr-4 py-3 rounded-xl bg-slate-800/60 border ${errors.username ? 'border-red-500' : 'border-slate-700'} text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 ${errors.username ? 'focus:ring-red-500/60' : 'focus:ring-purple-500/40'}`}
                         required
                       />
                     </div>
+                    {errors.username && <p className="mt-1 text-xs text-red-400">{errors.username}</p>}
                   </div>
                 )}
 
@@ -175,10 +253,14 @@ export const LoginModal: React.FC = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/60 border border-slate-700 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
+                      autoComplete="email"
+                      pattern="(?!\d)[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9.-]+\.[A-ZaZ]{2,}"
+                      title="Valid email required and cannot start with a digit."
+                      className={`w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/60 border ${errors.email ? 'border-red-500' : 'border-slate-700'} text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 ${errors.email ? 'focus:ring-red-500/60' : 'focus:ring-purple-500/40'}`}
                       required
                     />
                   </div>
+                  {errors.email && <p className="mt-1 text-xs text-red-400">{errors.email}</p>}
                 </div>
 
                 <div>
@@ -192,7 +274,11 @@ export const LoginModal: React.FC = () => {
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-12 py-3 rounded-xl bg-slate-800/60 border border-slate-700 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
+                      autoComplete={isLoginMode ? 'current-password' : 'new-password'}
+                      minLength={8}
+                      pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s])(?!.*\s).{8,72}"
+                      title="8+ chars, include upper, lower, digit, special, no spaces."
+                      className={`w-full pl-10 pr-12 py-3 rounded-xl bg-slate-800/60 border ${errors.password ? 'border-red-500' : 'border-slate-700'} text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 ${errors.password ? 'focus:ring-red-500/60' : 'focus:ring-purple-500/40'}`}
                       required
                     />
                     <button
@@ -203,6 +289,7 @@ export const LoginModal: React.FC = () => {
                       {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
                   </div>
+                  {errors.password && <p className="mt-1 text-xs text-red-400">{errors.password}</p>}
                 </div>
 
                 {!isLoginMode && (
@@ -217,7 +304,8 @@ export const LoginModal: React.FC = () => {
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleChange}
-                        className="w-full pl-10 pr-10 py-3 rounded-xl bg-slate-800/60 border border-slate-700 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/40"
+                        autoComplete="new-password"
+                        className={`w-full pl-10 pr-10 py-3 rounded-xl bg-slate-800/60 border ${errors.confirmPassword ? 'border-red-500' : 'border-slate-700'} text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 ${errors.confirmPassword ? 'focus:ring-red-500/60' : 'focus:ring-purple-500/40'}`}
                         required
                       />
                       <button
@@ -228,6 +316,7 @@ export const LoginModal: React.FC = () => {
                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
                     </div>
+                    {errors.confirmPassword && <p className="mt-1 text-xs text-red-400">{errors.confirmPassword}</p>}
                   </div>
                 )}
 
@@ -245,14 +334,12 @@ export const LoginModal: React.FC = () => {
                   </div>
                 )}
 
-                {error && (
-                  <div className="text-red-400 text-sm text-center">{error}</div>
-                )}
+                {error && <div className="text-red-400 text-sm text-center">{error}</div>}
 
                 <button
                   type="submit"
                   className="nv-glow-btn w-full h-12 rounded-xl"
-                  disabled={loading}
+                  disabled={loading || !canSubmit}
                 >
                   {loading ? (isLoginMode ? 'Signing in...' : 'Creating...') : (isLoginMode ? t.loginButton : t.signupButton)}
                 </button>
@@ -276,8 +363,8 @@ export const LoginModal: React.FC = () => {
                     className="w-full flex items-center justify-center px-4 h-11 rounded-xl bg-white/90 hover:bg-white text-slate-900 transition-colors"
                     type="button"
                     onClick={() => {
-                      setLoginModalOpen(false); // optional: hide before redirect
-                      apiService.googleLogin(); // redirects; no .then()
+                      setLoginModalOpen(false);
+                      apiService.googleLogin();
                     }}
                   >
                     <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
