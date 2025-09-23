@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useDashboard } from './DashboardContext';
-import { motion } from 'framer-motion';
 
 export const InteractiveGraph = () => {
   const { currentLanguage } = useDashboard();
@@ -79,19 +78,12 @@ export const InteractiveGraph = () => {
                 <button
                   key={period}
                   onClick={() => setSelectedPeriod(basePeriods[index])}
-                  className={`relative px-4 py-2 rounded-full text-sm font-medium transition-colors duration-300 focus:outline-none ${
+                  className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none ${
                     selectedPeriod === basePeriods[index]
-                      ? 'text-gray-900'
+                      ? 'text-gray-900 bg-[#00B8A9]'
                       : 'text-slate-300 hover:text-white'
                   }`}
                 >
-                  {selectedPeriod === basePeriods[index] && (
-                    <motion.div
-                      layoutId="active-graph-period"
-                      className="absolute inset-0 bg-[#00B8A9] rounded-full"
-                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                    />
-                  )}
                   <span className="relative z-10">{period}</span>
                 </button>
               ))}
