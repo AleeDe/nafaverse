@@ -8,6 +8,7 @@ import { Button } from './ui/button'; // Assuming you have this from shadcn/ui
 export const JourneySection = () => {
   const { currentLanguage, setLoginModalOpen, setIsLoginMode, isAuthenticated } = useDashboard();
   const [loading, setLoading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState<number | null>(null);
 
   const handleProtectedAction = (action: string) => {
     setLoading(true);
@@ -23,6 +24,31 @@ export const JourneySection = () => {
     }, 1000);
   };
 
+  const handleStepClick = (stepIndex: number, stepType: string) => {
+    setLoadingStep(stepIndex);
+    setTimeout(() => {
+      setLoadingStep(null);
+      if (!isAuthenticated) {
+        setIsLoginMode(false); // Set to signup mode
+        setLoginModalOpen(true);
+      } else {
+        // Future: Navigate to specific pages based on step
+        switch (stepType) {
+          case 'understand':
+            console.log('Navigate to Education/Learning page');
+            break;
+          case 'simulate':
+            console.log('Navigate to Simulation page');
+            break;
+          case 'grow':
+            console.log('Navigate to Portfolio/Growth page');
+            break;
+          default:
+            console.log(`Navigate to ${stepType} page`);
+        }
+      }
+    }, 1000);
+  };
   const content = {
     en: {
       journeyTitle: 'Your Journey to Financial Freedom',
@@ -59,19 +85,22 @@ export const JourneySection = () => {
       icon: Brain,
       title: t.understand,
       description: t.understandDesc,
-      color: 'from-[#1E1B4B] to-[#8B5CF6]'
+      color: 'from-[#1E1B4B] to-[#8B5CF6]',
+      type: 'understand'
     },
     {
       icon: Target,
       title: t.simulate,
       description: t.simulateDesc,
-      color: 'from-[#8B5CF6] to-[#F59E0B]'
+      color: 'from-[#8B5CF6] to-[#F59E0B]',
+      type: 'simulate'
     },
     {
       icon: TrendingUp,
       title: t.grow,
       description: t.growDesc,
-      color: 'from-[#F59E0B] to-[#1E1B4B]'
+      color: 'from-[#F59E0B] to-[#1E1B4B]',
+      type: 'grow'
     }
   ];
 
@@ -90,7 +119,13 @@ export const JourneySection = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
           {steps.map((step, index) => (
             <div key={index} className="group h-full animate-fadeInUp hover-lift hover-glow hover-target" style={{ animationDelay: `${index * 0.2}s` }}>
-              <div className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm overflow-hidden rounded-2xl">
+              {loadingStep === index ? (
+                <SkeletonLoader type="card" className="h-full" />
+              ) : (
+              <div 
+                className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm overflow-hidden rounded-2xl cursor-pointer transform hover:scale-105"
+                onClick={() => handleStepClick(index, step.type)}
+              >
                 <div className="p-0">
                   {/* Header with Icon */}
                   <div className={`bg-gradient-to-br ${step.color} p-4 sm:p-6 text-white relative overflow-hidden`}>
@@ -111,6 +146,7 @@ export const JourneySection = () => {
                   </div>
                 </div>
               </div>
+              )}
             </div>
           ))}
         </div>
