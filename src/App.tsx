@@ -12,7 +12,6 @@ import { DashboardProvider } from './components/DashboardContext';
 import { Toaster } from 'sonner';
 import { LoginModal } from './components/LoginModal';
 import { ForgotPassword } from './components/ForgotPassword';
-import { Footer } from './components/Footer';
 
 // Custom Cursor Component
 function CustomCursor() {
