@@ -106,8 +106,6 @@ export const LoginModal: React.FC = () => {
       loginLink: 'Sign In',
       orContinue: 'Or continue with',
       google: 'Continue with Google',
-      facebook: 'Continue with Facebook',
-      apple: 'Continue with Apple'
     },
     ur: {
       loginTitle: 'Dobara NafaVerse par aao',
@@ -126,8 +124,6 @@ export const LoginModal: React.FC = () => {
       loginLink: 'Sign In',
       orContinue: 'Ya in ke saath continue karo',
       google: 'Google se continue',
-      facebook: 'Facebook se continue',
-      apple: 'Apple se continue'
     }
   } as const;
 
