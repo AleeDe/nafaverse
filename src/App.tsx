@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { handleGoogleOAuthCallback } from './api/apiService';
 import { useDashboard } from './components/DashboardContext';
@@ -12,6 +12,53 @@ import { DashboardProvider } from './components/DashboardContext';
 import { Toaster } from 'sonner';
 import { LoginModal } from './components/LoginModal';
 import { ForgotPassword } from './components/ForgotPassword';
+
+// Custom Cursor Component
+function CustomCursor() {
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
+  const [isClicking, setIsClicking] = useState(false);
+
+  useEffect(() => {
+    const updatePosition = (e: MouseEvent) => {
+      setPosition({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'BUTTON' || target.tagName === 'A' || target.classList.contains('hover-target')) {
+        setIsHovering(true);
+      } else {
+        setIsHovering(false);
+      }
+    };
+
+    const handleMouseDown = () => setIsClicking(true);
+    const handleMouseUp = () => setIsClicking(false);
+
+    document.addEventListener('mousemove', updatePosition);
+    document.addEventListener('mouseover', handleMouseOver);
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', updatePosition);
+      document.removeEventListener('mouseover', handleMouseOver);
+      document.removeEventListener('mousedown', handleMouseDown);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
+
+  return (
+    <div
+      className={`custom-cursor ${isHovering ? 'hover' : ''} ${isClicking ? 'click' : ''}`}
+      style={{
+        left: `${position.x - 10}px`,
+        top: `${position.y - 10}px`,
+      }}
+    />
+  );
+}
 
 function AuthBootstrap() {
   const { refreshAuthFromStorage } = useDashboard();
@@ -49,6 +96,7 @@ function App() {
 
   return (
     <DashboardProvider>
+      <CustomCursor />
       <BrowserRouter>
         <AuthBootstrap /> {/* ensure this is mounted inside the provider */}
         <Toaster position="top-center" />

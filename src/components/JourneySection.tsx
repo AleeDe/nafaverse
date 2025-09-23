@@ -1,7 +1,6 @@
 import React from 'react';
 import { Brain, Target, TrendingUp } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
-import { motion } from 'framer-motion';
 import { Button } from './ui/button'; // Assuming you have this from shadcn/ui
 
 export const JourneySection = () => {
@@ -56,80 +55,54 @@ export const JourneySection = () => {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-[#8B5CF6]/10 via-white to-[#F59E0B]/5">
+    <section className="py-12 sm:py-20 bg-gradient-to-br from-[#8B5CF6]/10 via-white to-[#F59E0B]/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-3xl md:text-4xl lg:text-5xl mb-4 font-bold text-[#1E293B]"
-          >
+        <div className="text-center mb-12 sm:mb-16">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl mb-4 font-bold text-[#1E293B] animate-fadeInUp hover-target">
             {t.journeyTitle}
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto"
-          >
+          </h2>
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto animate-fadeInUp">
             {t.journeySubtitle}
-          </motion.p>
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
           {steps.map((step, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              viewport={{ once: true }}
-              whileHover={{ y: -5 }}
-              className="group h-full"
-            >
+            <div key={index} className="group h-full animate-fadeInUp hover-lift hover-glow hover-target" style={{ animationDelay: `${index * 0.2}s` }}>
               <div className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm overflow-hidden rounded-2xl">
                 <div className="p-0">
                   {/* Header with Icon */}
-                  <div className={`bg-gradient-to-br ${step.color} p-6 text-white relative overflow-hidden`}>
-                    <div className="absolute top-2 right-2 opacity-10">
+                  <div className={`bg-gradient-to-br ${step.color} p-4 sm:p-6 text-white relative overflow-hidden`}>
+                    <div className="absolute top-2 right-2 opacity-10 animate-float">
                       <step.icon className="w-16 h-16" />
                     </div>
                     <div className="relative z-10">
-                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-2">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center mb-2 animate-pulse-custom">
                         <step.icon className="w-6 h-6" />
                       </div>
-                      <h3 className="text-xl font-bold">{step.title}</h3>
+                      <h3 className="text-lg sm:text-xl font-bold">{step.title}</h3>
                     </div>
                   </div>
 
                   {/* Content */}
-                  <div className="p-6 text-center">
-                    <p className="text-gray-600 leading-relaxed">{step.description}</p>
+                  <div className="p-4 sm:p-6 text-center">
+                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{step.description}</p>
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center"
-        >
+        <div className="text-center animate-fadeInUp">
           <Button
             onClick={() => setLoginModalOpen(true)}
             size="lg"
-            className="bg-[#1E1B4B] hover:bg-[#1E1B4B]/90 text-white px-8 py-4 rounded-lg"
+            className="bg-[#1E1B4B] hover:bg-[#1E1B4B]/90 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg hover-target hover-lift w-full sm:w-auto"
           >
             {t.readyToStart}
           </Button>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

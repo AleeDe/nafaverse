@@ -74,30 +74,22 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
     setCurrentLanguage(currentLanguage === 'en' ? 'ur' : 'en');
   };
 
-  // Example navigation items
-  const navItems = [
-    { label: t.home, path: '/' },
-    { label: t.features, path: '/features' },
-    { label: t.about, path: '/about' },
-    { label: t.contact, path: '/contact' }
-  ];
 
   return (
-    <div>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black md:bg-black/20 md:backdrop-blur-md border-b border-white/10">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 overflow-x-auto md:overflow-visible">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10 animate-fadeInUp">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <div className="flex items-center space-x-2 min-w-0">
-              <NafaVerseLogo className="h-8 w-8" />
-              <span className="text-xl font-bold text-white">NafaVerse</span>
+            <div className="flex items-center space-x-2 hover-target hover-lift">
+              <NafaVerseLogo className="h-8 w-8 animate-pulse-custom" />
+              <span className="text-lg sm:text-xl font-bold text-white">NafaVerse</span>
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8 min-w-0">
+            <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
               <button
                 onClick={() => handleNavClick('home')}
-                className={`text-sm font-medium transition-colors duration-200 ${
+                className={`text-sm font-medium transition-all duration-300 hover-target hover-lift ${
                   location.pathname === '/' ? 'text-[#00B8A9]' : 'text-white hover:text-[#00B8A9]'
                 }`}
               >
@@ -105,13 +97,13 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
               </button>
               <button
                 onClick={() => handleNavClick('features')}
-                className="text-white hover:text-[#00B8A9] text-sm font-medium transition-colors duration-200"
+                className="text-white hover:text-[#00B8A9] text-sm font-medium transition-all duration-300 hover-target hover-lift"
               >
                 {t.features}
               </button>
               <button
                 onClick={() => handleNavClick('about')}
-                className={`text-sm font-medium transition-colors duration-200 ${
+                className={`text-sm font-medium transition-all duration-300 hover-target hover-lift ${
                   location.pathname === '/about' ? 'text-[#00B8A9]' : 'text-white hover:text-[#00B8A9]'
                 }`}
               >
@@ -119,7 +111,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
               </button>
               <button
                 onClick={() => handleNavClick('contact')}
-                className={`text-sm font-medium transition-colors duration-200 ${
+                className={`text-sm font-medium transition-all duration-300 hover-target hover-lift ${
                   location.pathname === '/contact' ? 'text-[#00B8A9]' : 'text-white hover:text-[#00B8A9]'
                 }`}
               >
@@ -128,16 +120,16 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
             </div>
 
             {/* Right Side */}
-            <div className="flex items-center space-x-4 min-w-0">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <Button
                 onClick={handleLanguageToggle}
                 variant="ghost"
                 size="sm"
-                className="text-white hover:bg-white/10 border border-white/20"
+                className="text-white hover:bg-white/10 border border-white/20 hover-target hover-lift text-xs sm:text-sm"
               >
                 {t.language}
               </Button>
-              <div className="hidden sm:flex items-center space-x-2 min-w-0">
+              <div className="hidden sm:flex items-center space-x-2">
                 {!isAuthenticated ? (
                   <>
                     <Button
@@ -147,7 +139,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                       }}
                       variant="ghost"
                       size="sm"
-                      className="text-white hover:bg-white/10"
+                      className="text-white hover:bg-white/10 hover-target hover-lift"
                     >
                       Login
                     </Button>
@@ -157,20 +149,20 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                         setLoginModalOpen(true);
                       }}
                       variant="glow"
-                      className="text-white"
+                      className="text-white hover-target hover-lift"
                     >
                       Sign Up
                     </Button>
                   </>
                 ) : (
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/10 text-white">
+                    <div className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-lg bg-white/10 text-white hover-target">
                       <User className="w-4 h-4 opacity-80" />
-                      <span className="truncate max-w-[140px]">
+                      <span className="truncate max-w-[80px] sm:max-w-[140px] text-xs sm:text-sm">
                         {user?.username || user?.email || 'User'}
                       </span>
                     </div>
-                    <Button onClick={logout} variant="ghost" className="text-white hover:bg-white/10">
+                    <Button onClick={logout} variant="ghost" className="text-white hover:bg-white/10 hover-target hover-lift text-xs sm:text-sm">
                       Logout
                     </Button>
                   </div>
@@ -180,16 +172,15 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
               {/* Mobile Menu */}
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="md:hidden text-white">
+                  <Button variant="ghost" size="sm" className="md:hidden text-white hover-target hover-lift">
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="p-0 border-none w-full max-w-xs overflow-x-hidden" >
+                <SheetContent side="right" className="p-0 border-none w-full max-w-xs">
                   {/* Gradient/Blob Background */}
-                  <div className="absolute inset-0 -z-10 bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81] overflow-hidden">
-                    <div className="absolute top-20 left-10 w-32 h-32 bg-[#8B5CF6] rounded-full blur-xl opacity-20"></div>
-                    <div className="absolute bottom-20 right-10 w-48 h-48 bg-[#F59E0B] rounded-full blur-xl opacity-20"></div>
-                    <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-[#8B5CF6]/50 rounded-full blur-2xl transform -translate-x-1/2 -translate-y-1/2 opacity-20"></div>
+                  <div className="absolute inset-0 -z-10 bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81]">
+                    <div className="absolute top-20 left-10 w-32 h-32 bg-[#8B5CF6] rounded-full blur-xl opacity-20 animate-float"></div>
+                    <div className="absolute bottom-20 right-10 w-48 h-48 bg-[#F59E0B] rounded-full blur-xl opacity-20 animate-pulse-custom"></div>
                   </div>
                   <SheetHeader>
                     <SheetTitle className="text-white">Menu</SheetTitle>
@@ -197,13 +188,13 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                       Navigate through NafaVerse
                     </SheetDescription>
                   </SheetHeader>
-                  <div className="flex flex-col space-y-4 mt-8 px-4 overflow-x-hidden">
+                  <div className="flex flex-col space-y-4 mt-8 px-4">
                     <button
                       onClick={() => {
                         handleNavClick('home');
                         setIsMobileMenuOpen(false);
                       }}
-                      className="text-white hover:text-[#00B8A9] text-left py-2"
+                      className="text-white hover:text-[#00B8A9] text-left py-2 hover-target hover-lift transition-all duration-300"
                     >
                       {t.home}
                     </button>
@@ -212,7 +203,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                         handleNavClick('features');
                         setIsMobileMenuOpen(false);
                       }}
-                      className="text-white hover:text-[#00B8A9] text-left py-2"
+                      className="text-white hover:text-[#00B8A9] text-left py-2 hover-target hover-lift transition-all duration-300"
                     >
                       {t.features}
                     </button>
@@ -221,7 +212,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                         handleNavClick('about');
                         setIsMobileMenuOpen(false);
                       }}
-                      className="text-white hover:text-[#00B8A9] text-left py-2"
+                      className="text-white hover:text-[#00B8A9] text-left py-2 hover-target hover-lift transition-all duration-300"
                     >
                       {t.about}
                     </button>
@@ -230,7 +221,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                         handleNavClick('contact');
                         setIsMobileMenuOpen(false);
                       }}
-                      className="text-white hover:text-[#00B8A9] text-left py-2"
+                      className="text-white hover:text-[#00B8A9] text-left py-2 hover-target hover-lift transition-all duration-300"
                     >
                       {t.contact}
                     </button>
@@ -241,15 +232,15 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                         setLoginModalOpen(true);
                         setIsMobileMenuOpen(false);
                       }}
-                      className="mt-6 w-full bg-gradient-to-r from-[#A78BFA] to-[#60A5FA] text-white font-bold text-lg py-3 rounded-xl shadow-lg"
+                      className="mt-6 w-full bg-gradient-to-r from-[#A78BFA] to-[#60A5FA] text-white font-bold text-lg py-3 rounded-xl shadow-lg hover-target hover-lift"
                     >
                       Get Started
                     </Button>
                   </div>
                   {/* Login/Signup at Bottom */}
-                  <div className="absolute bottom-0 left-0 w-full flex flex-col gap-2 px-4 pb-6 bg-gradient-to-t from-black/70 via-transparent to-transparent overflow-x-hidden">
+                  <div className="absolute bottom-0 left-0 w-full flex flex-col gap-2 px-4 pb-6 bg-gradient-to-t from-black/70 via-transparent to-transparent">
                     {isAuthenticated ? (
-                      <Button onClick={logout} className="w-full mt-6 bg-red-600 text-white">
+                      <Button onClick={logout} className="w-full mt-6 bg-red-600 text-white hover-target hover-lift">
                         Logout
                       </Button>
                     ) : (
@@ -261,7 +252,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                             setIsMobileMenuOpen(false);
                           }}
                           variant="ghost"
-                          className="w-full text-white border border-white/20"
+                          className="w-full text-white border border-white/20 hover-target hover-lift"
                         >
                           {t.login}
                         </Button>
@@ -272,7 +263,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                             setIsMobileMenuOpen(false);
                           }}
                           variant="glow"
-                          className="w-full text-white"
+                          className="w-full text-white hover-target hover-lift"
                         >
                           {t.signup}
                         </Button>
@@ -283,7 +274,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                             apiService.googleLogin();
                           }}
                           variant="ghost"
-                          className="w-full text-white border border-white/20"
+                          className="w-full text-white border border-white/20 hover-target hover-lift"
                         >
                           <Chrome className="w-4 h-4 mr-2" /> Continue with Google
                         </Button>
@@ -293,9 +284,8 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                 </SheetContent>
               </Sheet>
             </div>
-          </div>
         </div>
-      </nav>
-    </div>
+      </div>
+    </nav>
   );
 };
