@@ -119,12 +119,10 @@ export const JourneySection = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-8 sm:mb-12">
           {steps.map((step, index) => (
             <div key={index} className="group h-full animate-fadeInUp hover-lift hover-glow hover-target" style={{ animationDelay: `${index * 0.2}s` }}>
-              {loadingStep === index ? (
-                <SkeletonLoader type="card" className="h-full" />
-              ) : (
               <div 
                 className="h-full border-none shadow-lg hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm overflow-hidden rounded-2xl cursor-pointer transform hover:scale-105"
                 onClick={() => handleStepClick(index, step.type)}
+                style={{ opacity: loadingStep === index ? 0.6 : 1 }}
               >
                 <div className="p-0">
                   {/* Header with Icon */}
@@ -133,7 +131,7 @@ export const JourneySection = () => {
                       <step.icon className="w-16 h-16" />
                     </div>
                     <div className="relative z-10">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center mb-2 animate-pulse-custom">
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center mb-2 ${loadingStep === index ? 'animate-spin' : 'animate-pulse-custom'}`}>
                         <step.icon className="w-6 h-6" />
                       </div>
                       <h3 className="text-lg sm:text-xl font-bold">{step.title}</h3>
@@ -146,7 +144,6 @@ export const JourneySection = () => {
                   </div>
                 </div>
               </div>
-              )}
             </div>
           ))}
         </div>

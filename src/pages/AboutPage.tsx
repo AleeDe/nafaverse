@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react';
 import { About } from '../components/About';
 import { Footer } from '../components/Footer';
+import { SkeletonLoader } from '../components/SkeletonLoader';
 import { ArrowUp } from 'lucide-react';
 import { useDashboard } from '../components/DashboardContext';
 
@@ -37,6 +39,14 @@ const scrollToTop = () => {
 
 export function AboutPage() {
 	const { currentLanguage } = useDashboard();
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setLoading(false);
+		}, 1000);
+		return () => clearTimeout(timer);
+	}, []);
 
 	const content = {
 		en: {
@@ -52,6 +62,10 @@ export function AboutPage() {
 	};
 
 	const t = content[currentLanguage];
+
+	if (loading) {
+		return <SkeletonLoader type="page" />;
+	}
 
 	return (
 		<>
