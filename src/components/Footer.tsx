@@ -6,45 +6,63 @@ export const Footer: React.FC = () => {
   const { currentLanguage } = useDashboard();
 
   return (
-    <footer className="bg-slate-950/80 border-t border-white/10">
+    <footer className="bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81] border-t border-white/10 relative overflow-hidden">
+      {/* Background blobs */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-10 left-10 w-32 h-32 bg-[#8B5CF6] rounded-full blur-xl"></div>
+        <div className="absolute bottom-10 right-10 w-48 h-48 bg-[#F59E0B] rounded-full blur-xl"></div>
+      </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative z-10">
           <div>
-            <h3 className="text-white font-bold text-lg">NafaVerse</h3>
-            <p className="text-slate-300 mt-3 text-sm">Learn, Play, Earn — Islamic finance ko simple aur engaging banaya.</p>
+            <h3 className="text-white font-bold text-lg mb-3">NafaVerse</h3>
+            <p className="text-purple-100/90 mt-3 text-sm leading-relaxed">Learn, Play, Earn — Islamic finance ko simple aur engaging banaya.</p>
           </div>
           <div>
-            <h4 className="text-white font-semibold mb-3">Product</h4>
-            <ul className="space-y-2 text-slate-300 text-sm">
-              <li>Learn Tracks</li>
-              <li>Quizzes & Rewards</li>
-              <li>Portfolio</li>
+            <h4 className="text-white font-semibold mb-4">Product</h4>
+            <ul className="space-y-3 text-purple-100/80 text-sm">
+              <li className="hover:text-[#A786DF] transition-colors cursor-pointer">Learn Tracks</li>
+              <li className="hover:text-[#A786DF] transition-colors cursor-pointer">Quizzes & Rewards</li>
+              <li className="hover:text-[#A786DF] transition-colors cursor-pointer">Portfolio</li>
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-semibold mb-3">Company</h4>
-            <ul className="space-y-2 text-slate-300 text-sm">
-              <li>About</li>
-              <li>Contact</li>
+            <h4 className="text-white font-semibold mb-4">Company</h4>
+            <ul className="space-y-3 text-purple-100/80 text-sm">
+              <li className="hover:text-[#A786DF] transition-colors cursor-pointer">About</li>
+              <li className="hover:text-[#A786DF] transition-colors cursor-pointer">Contact</li>
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-semibold mb-3">Newsletter</h4>
+            <h4 className="text-white font-semibold mb-4">Newsletter</h4>
             <div className="flex gap-2">
-              <input placeholder="Email" className="flex-1 h-11 rounded-xl bg-white/5 border border-white/10 px-4 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/40" />
-              <button className="nv-glow-btn h-11 px-5">Join</button>
+              <input 
+                placeholder="Email" 
+                className="flex-1 h-11 rounded-xl bg-white/10 border border-white/20 px-4 text-white placeholder:text-purple-200/60 focus:outline-none focus:ring-2 focus:ring-[#A786DF]/50 focus:border-[#A786DF]/50 transition-all" 
+              />
+              <button className="nv-glow-btn h-11 px-5 font-medium">Join</button>
             </div>
-            <div className="flex gap-4 mt-4 text-slate-300">
-              <a aria-label="Twitter"><Twitter className="w-5 h-5" /></a>
-              <a aria-label="Facebook"><Facebook className="w-5 h-5" /></a>
-              <a aria-label="Instagram"><Instagram className="w-5 h-5" /></a>
-              <a aria-label="LinkedIn"><Linkedin className="w-5 h-5" /></a>
+            <div className="flex gap-4 mt-6 text-purple-100/70">
+              <a aria-label="Twitter" className="hover:text-[#A786DF] transition-colors cursor-pointer transform hover:scale-110">
+                <Twitter className="w-5 h-5" />
+              </a>
+              <a aria-label="Facebook" className="hover:text-[#A786DF] transition-colors cursor-pointer transform hover:scale-110">
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a aria-label="Instagram" className="hover:text-[#A786DF] transition-colors cursor-pointer transform hover:scale-110">
+                <Instagram className="w-5 h-5" />
+              </a>
+              <a aria-label="LinkedIn" className="hover:text-[#A786DF] transition-colors cursor-pointer transform hover:scale-110">
+                <Linkedin className="w-5 h-5" />
+              </a>
             </div>
           </div>
         </div>
-        <div className="mt-10 pt-6 border-t border-white/10 text-sm text-slate-400 flex items-center justify-between">
+        <div className="mt-12 pt-6 border-t border-white/20 text-sm text-purple-100/60 flex items-center justify-between relative z-10">
           <p>© {new Date().getFullYear()} NafaVerse. All rights reserved.</p>
-          <p>Made with ❤️ in Pakistan</p>
+          <p className="flex items-center gap-1">
+            Made with <span className="text-red-400 animate-pulse">❤️</span> in Pakistan
+          </p>
         </div>
       </div>
     </footer>
