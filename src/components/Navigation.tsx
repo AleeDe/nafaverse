@@ -177,122 +177,115 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-80 bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81] border-[rgba(167,134,223,0.3)] p-0">
-                  <div className="absolute inset-0 opacity-15">
-                    <div className="absolute top-20 left-10 w-32 h-32 bg-[#8B5CF6] rounded-full blur-xl"></div>
-                    <div className="absolute bottom-20 right-10 w-48 h-48 bg-[#F59E0B] rounded-full blur-xl"></div>
-                    <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-[#8B5CF6]/50 rounded-full blur-2xl transform -translate-x-1/2 -translate-y-1/2"></div>
-                  </div>
-                  
-                  <div className="relative z-10 flex flex-col h-full">
-                    <SheetHeader className="p-6 border-b border-white/10">
+                  <div className="flex flex-col h-full">
+                    <SheetHeader className="p-6 border-b border-white/10 bg-black/20">
                       <SheetTitle className="text-white text-xl font-bold flex items-center gap-2">
                         <NafaVerseLogo className="h-6 w-6" />
-                        NafaVerse Menu
+                        NafaVerse
                       </SheetTitle>
                       <SheetDescription className="text-purple-200">
-                        Navigate through NafaVerse
+                        {currentLanguage === 'ur' ? 'Menu' : 'Menu'}
                       </SheetDescription>
                     </SheetHeader>
 
                     <div className="flex-1 overflow-auto p-6 space-y-4">
-                      {/* Navigation Links */}
-                    <button
-                      onClick={() => {
-                        handleNavClick('home');
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/10 ${
-                        location.pathname === '/' ? 'bg-[#A786DF]/20 text-[#A786DF] border border-[#A786DF]/30' : 'text-white hover:text-[#A786DF]'
-                      }`}
-                    >
-                      {t.home}
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleNavClick('features');
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full text-left px-4 py-3 rounded-xl text-white hover:text-[#A786DF] hover:bg-white/10 transition-all duration-300"
-                    >
-                      {t.features}
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleNavClick('about');
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/10 ${
-                        location.pathname === '/about' ? 'bg-[#A786DF]/20 text-[#A786DF] border border-[#A786DF]/30' : 'text-white hover:text-[#A786DF]'
-                      }`}
-                    >
-                      {t.about}
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleNavClick('contact');
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/10 ${
-                        location.pathname === '/contact' ? 'bg-[#A786DF]/20 text-[#A786DF] border border-[#A786DF]/30' : 'text-white hover:text-[#A786DF]'
-                      }`}
-                    >
-                      {t.contact}
-                    </button>
+                      <button
+                        onClick={() => {
+                          handleNavClick('home');
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/10 ${
+                          location.pathname === '/' ? 'bg-[#A786DF]/20 text-[#A786DF] border border-[#A786DF]/30' : 'text-white hover:text-[#A786DF]'
+                        }`}
+                      >
+                        {t.home}
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleNavClick('features');
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className="w-full text-left px-4 py-3 rounded-xl text-white hover:text-[#A786DF] hover:bg-white/10 transition-all duration-300"
+                      >
+                        {t.features}
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleNavClick('about');
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/10 ${
+                          location.pathname === '/about' ? 'bg-[#A786DF]/20 text-[#A786DF] border border-[#A786DF]/30' : 'text-white hover:text-[#A786DF]'
+                        }`}
+                      >
+                        {t.about}
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleNavClick('contact');
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-300 hover:bg-white/10 ${
+                          location.pathname === '/contact' ? 'bg-[#A786DF]/20 text-[#A786DF] border border-[#A786DF]/30' : 'text-white hover:text-[#A786DF]'
+                        }`}
+                      >
+                        {t.contact}
+                      </button>
                     </div>
-                    {/* Auth Section at Bottom */}
+                    
                     <div className="p-6 border-t border-white/10 bg-black/20 backdrop-blur-sm">
-                    {isAuthenticated ? (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3 p-3 rounded-xl bg-white/10 border border-white/10">
-                          <User className="w-5 h-5 text-[#A786DF]" />
-                          <span className="text-white font-medium truncate">
-                            {user?.username || user?.email || 'User'}
-                          </span>
+                      {isAuthenticated ? (
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-3 p-3 rounded-xl bg-white/10 border border-white/10">
+                            <User className="w-5 h-5 text-[#A786DF]" />
+                            <span className="text-white font-medium truncate">
+                              {user?.username || user?.email || 'User'}
+                            </span>
+                          </div>
+                          <Button 
+                            onClick={() => {
+                              logout();
+                              setIsMobileMenuOpen(false);
+                            }} 
+                            className="w-full bg-red-600 hover:bg-red-700 text-white"
+                          >
+                            Logout
+                          </Button>
                         </div>
-                        <Button 
-                          onClick={() => {
-                            logout();
-                            setIsMobileMenuOpen(false);
-                          }} 
-                          className="w-full bg-red-600 hover:bg-red-700 text-white"
-                        >
-                        Logout
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <Button
-                          onClick={() => {
-                            setIsLoginMode(true);
-                            setLoginModalOpen(true);
-                            setIsMobileMenuOpen(false);
-                          }}
-                          className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20"
-                        >
-                          {t.login}
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            setIsLoginMode(false);
-                            setLoginModalOpen(true);
-                            setIsMobileMenuOpen(false);
-                          }}
-                          className="w-full bg-gradient-to-r from-[#A78BFA] to-[#60A5FA] text-white font-bold"
-                        >
-                          {t.signup}
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            setIsMobileMenuOpen(false);
-                            apiService.googleLogin();
-                          }}
-                          className="w-full bg-white text-gray-900 hover:bg-gray-100 flex items-center justify-center gap-2"
-                        >
-                          <Chrome className="w-4 h-4" />
-                          Continue with Google
-                        </Button>
-                      </div>
-                    )}
+                      ) : (
+                        <div className="space-y-3">
+                          <Button
+                            onClick={() => {
+                              setIsLoginMode(true);
+                              setLoginModalOpen(true);
+                              setIsMobileMenuOpen(false);
+                            }}
+                            className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20"
+                          >
+                            {t.login}
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setIsLoginMode(false);
+                              setLoginModalOpen(true);
+                              setIsMobileMenuOpen(false);
+                            }}
+                            className="w-full bg-gradient-to-r from-[#A78BFA] to-[#60A5FA] text-white font-bold"
+                          >
+                            {t.signup}
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setIsMobileMenuOpen(false);
+                              apiService.googleLogin();
+                            }}
+                            className="w-full bg-white text-gray-900 hover:bg-gray-100 flex items-center justify-center gap-2"
+                          >
+                            <Chrome className="w-4 h-4" />
+                            Continue with Google
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </SheetContent>
