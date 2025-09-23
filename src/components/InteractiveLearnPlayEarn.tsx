@@ -4,7 +4,17 @@ import { Button } from './ui/button';
 import { useDashboard } from './DashboardContext';
 
 export const InteractiveLearnPlayEarn = () => {
-  const { currentLanguage, setLoginModalOpen } = useDashboard();
+  const { currentLanguage, setLoginModalOpen, setIsLoginMode, isAuthenticated } = useDashboard();
+
+  const handleProtectedAction = (action: string) => {
+    if (!isAuthenticated) {
+      setIsLoginMode(false); // Set to signup mode
+      setLoginModalOpen(true);
+    } else {
+      // Future: Navigate to protected pages
+      console.log(`Navigate to ${action} page`);
+    }
+  };
 
   const content = {
     en: {
@@ -132,7 +142,7 @@ export const InteractiveLearnPlayEarn = () => {
               </ul>
 
               <Button
-                onClick={() => setLoginModalOpen(true)}
+                onClick={() => handleProtectedAction('quiz')}
                 className="w-full bg-gradient-to-r from-purple-600 to-orange-500 text-white font-bold text-sm sm:text-base py-2 sm:py-3 px-4 sm:px-6 hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover-target hover-lift"
               >
                 {t.quizCta} <ArrowRight className="w-4 h-4 ml-2" />

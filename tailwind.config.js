@@ -7,6 +7,13 @@ export default {
         sans: ['Poppins', 'ui-sans-serif', 'system-ui', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'],
         display: ['Space Grotesk', 'Poppins', 'ui-sans-serif']
       },
+      fontWeight: {
+        'light': '300',
+        'normal': '400',
+        'medium': '500',
+        'semibold': '600',
+        'bold': '700'
+      },
       colors: {
         nv: {
           primary: '#4B3F72',

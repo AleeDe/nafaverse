@@ -176,6 +176,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: 'Poppins', 'Space Grotesk', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+  font-weight: 400; /* Reduced default font weight */
   overflow-x: hidden;
 }
 
@@ -187,7 +188,7 @@ body {
   justify-content: center;
   padding: 0.75rem 1.25rem;
   border-radius: 0.75rem; /* rounded-xl */
-  font-weight: 600;
+  font-weight: 500; /* Reduced font weight */
   color: #fff;
   transition: all .3s ease;
   background: linear-gradient(90deg, rgba(var(--nv-primary),1) 0%, rgba(var(--nv-secondary),1) 100%);
@@ -260,6 +261,19 @@ body {
   
   .nv-card {
     margin: 0.5rem;
+  }
+  
+  /* Reduce font weights on mobile */
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 500 !important;
+  }
+  
+  .font-bold {
+    font-weight: 600 !important;
+  }
+  
+  .font-semibold {
+    font-weight: 500 !important;
   }
 }
 

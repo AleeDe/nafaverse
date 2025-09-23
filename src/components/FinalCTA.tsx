@@ -4,7 +4,17 @@ import { useDashboard } from './DashboardContext';
 import { Button } from './ui/button'; // Assuming you have a Button component
 
 export const FinalCTA: React.FC = () => {
-  const { currentLanguage, setLoginModalOpen } = useDashboard();
+  const { currentLanguage, setLoginModalOpen, setIsLoginMode, isAuthenticated } = useDashboard();
+
+  const handleProtectedAction = (action: string) => {
+    if (!isAuthenticated) {
+      setIsLoginMode(false); // Set to signup mode
+      setLoginModalOpen(true);
+    } else {
+      // Future: Navigate to protected pages
+      console.log(`Navigate to ${action} page`);
+    }
+  };
 
   const content = {
     en: {
@@ -42,14 +52,14 @@ export const FinalCTA: React.FC = () => {
         </p>
         <div className="flex flex-col sm:flex-row gap-6 justify-center items-center w-full">
           <Button
-            onClick={() => setLoginModalOpen(true)}
+            onClick={() => handleProtectedAction('start-free-trial')}
             size="lg"
             className="bg-indigo-600 text-white font-bold rounded-xl px-8 py-4 text-lg w-full sm:w-auto transition-all duration-300 hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-1"
           >
             {t.primaryCTA}
           </Button>
           <Button
-            onClick={() => { /* Handle community link */ }}
+            onClick={() => handleProtectedAction('join-community')}
             size="lg"
             variant="outline"
             className="bg-transparent border-white/30 text-white font-bold rounded-xl px-8 py-4 text-lg w-full sm:w-auto transition-all duration-300 hover:bg-white/10 hover:border-white/50"

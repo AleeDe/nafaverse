@@ -4,7 +4,17 @@ import { Button } from './ui/button';
 import { useDashboard } from './DashboardContext';
 
 export const HeroSection = () => {
-  const { currentLanguage } = useDashboard();
+  const { currentLanguage, isAuthenticated, setLoginModalOpen, setIsLoginMode } = useDashboard();
+
+  const handleProtectedAction = (action: string) => {
+    if (!isAuthenticated) {
+      setIsLoginMode(false); // Set to signup mode
+      setLoginModalOpen(true);
+    } else {
+      // Future: Navigate to protected pages
+      console.log(`Navigate to ${action} page`);
+    }
+  };
 
   const content = {
     en: {
@@ -67,13 +77,23 @@ export const HeroSection = () => {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center animate-fadeInUp px-4">
-            <Button variant="glow" size="lg" className="w-full sm:w-auto hover-lift">
+            <Button 
+              variant="glow" 
+              size="lg" 
+              className="w-full sm:w-auto hover-lift"
+              onClick={() => handleProtectedAction('get-started')}
+            >
               <span className="flex items-center">
                 {t.primaryCTA}
                 <TrendingUp className="w-5 h-5 ml-2" />
               </span>
             </Button>
-            <Button variant="outline" size="lg" className="w-full sm:w-auto border-[rgb(var(--nv-accent))] text-white hover:bg-[rgb(var(--nv-accent))]/10 hover-lift">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="w-full sm:w-auto border-[rgb(var(--nv-accent))] text-white hover:bg-[rgb(var(--nv-accent))]/10 hover-lift"
+              onClick={() => handleProtectedAction('still-thinking')}
+            >
               {t.secondaryCTA}
             </Button>
           </div>

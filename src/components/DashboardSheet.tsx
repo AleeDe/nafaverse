@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from './ui/sheet';
-import { LogIn, Settings, TrendingUp, User, Sparkles, LogOut } from 'lucide-react';
+import { LogIn, Settings, TrendingUp, User, Sparkles, LogOut, X } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
 
 export const DashboardSheet: React.FC = () => {
@@ -72,6 +72,12 @@ export const DashboardSheet: React.FC = () => {
             <SheetDescription className="text-purple-200">
               {tt.tagline}
             </SheetDescription>
+            <button
+              onClick={() => setDashboardOpen(false)}
+              className="absolute top-4 right-4 p-2 hover:bg-white/10 rounded-full transition-colors"
+            >
+              <X className="w-5 h-5 text-slate-300" />
+            </button>
           </SheetHeader>
 
           {/* Scrollable content */}

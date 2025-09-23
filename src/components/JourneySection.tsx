@@ -4,7 +4,17 @@ import { useDashboard } from './DashboardContext';
 import { Button } from './ui/button'; // Assuming you have this from shadcn/ui
 
 export const JourneySection = () => {
-  const { currentLanguage, setLoginModalOpen } = useDashboard();
+  const { currentLanguage, setLoginModalOpen, setIsLoginMode, isAuthenticated } = useDashboard();
+
+  const handleProtectedAction = (action: string) => {
+    if (!isAuthenticated) {
+      setIsLoginMode(false); // Set to signup mode
+      setLoginModalOpen(true);
+    } else {
+      // Future: Navigate to protected pages based on action
+      console.log(`Navigate to ${action} page`);
+    }
+  };
 
   const content = {
     en: {
@@ -96,7 +106,7 @@ export const JourneySection = () => {
 
         <div className="text-center animate-fadeInUp">
           <Button
-            onClick={() => setLoginModalOpen(true)}
+            onClick={() => handleProtectedAction('ready-to-start')}
             size="lg"
             className="bg-[#1E1B4B] hover:bg-[#1E1B4B]/90 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg hover-target hover-lift w-full sm:w-auto"
           >
