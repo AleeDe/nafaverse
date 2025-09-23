@@ -133,8 +133,6 @@ export const LoginModal: React.FC = () => {
 
   const t = content[currentLanguage] || content.en;
 
-  if (!loginModalOpen) return null;
-
   // Click outside to close
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -151,6 +149,8 @@ export const LoginModal: React.FC = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [loginModalOpen, setLoginModalOpen]);
+
+  if (!loginModalOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
