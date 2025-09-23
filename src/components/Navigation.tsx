@@ -178,7 +178,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                 </SheetTrigger>
                 <SheetContent side="right" className="w-80 bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81] border-[rgba(167,134,223,0.3)] p-0">
                   <div className="flex flex-col h-full">
-                    <SheetHeader className="p-6 border-b border-white/10 bg-black/20">
+                    <SheetHeader className="p-6 border-b border-white/10 bg-[#1E1B4B]/90 backdrop-blur-sm">
                       <SheetTitle className="text-white text-xl font-bold flex items-center gap-2">
                         <NafaVerseLogo className="h-6 w-6" />
                         NafaVerse
@@ -188,7 +188,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                       </SheetDescription>
                     </SheetHeader>
 
-                    <div className="flex-1 overflow-auto p-6 space-y-4">
+                    <div className="flex-1 overflow-auto p-6 space-y-4 bg-[#0F0A2E]/95">
                       <button
                         onClick={() => {
                           handleNavClick('home');
@@ -233,7 +233,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                       </button>
                     </div>
                     
-                    <div className="p-6 border-t border-white/10 bg-black/20 backdrop-blur-sm">
+                    <div className="p-6 border-t border-white/10 bg-[#312E81]/90 backdrop-blur-sm">
                       {isAuthenticated ? (
                         <div className="space-y-3">
                           <div className="flex items-center gap-3 p-3 rounded-xl bg-white/10 border border-white/10">
