@@ -40,7 +40,6 @@ export function ContactPage() {
   return (
     <>
       <Contact currentLanguage={currentLanguage} />
-      <Footer />
       
       <button
         onClick={scrollToTop}

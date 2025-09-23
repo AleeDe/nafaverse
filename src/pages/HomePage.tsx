@@ -5,7 +5,6 @@ import { JourneySection } from '../components/JourneySection';
 import { InteractiveGraph } from '../components/InteractiveGraph';
 import { InteractiveLearnPlayEarn } from '../components/InteractiveLearnPlayEarn';
 import { FinalCTA } from '../components/FinalCTA';
-import { Footer } from '../components/Footer';
 import { DashboardSheet } from '../components/DashboardSheet';
 import { User } from 'lucide-react'; // User icon import karein
 
@@ -43,7 +42,6 @@ export function HomePage({ refs }: HomePageProps) {
         <div ref={refs.graphRef}><InteractiveGraph /></div>
         <div ref={refs.learnRef}><InteractiveLearnPlayEarn /></div>
         <div ref={refs.ctaRef}><FinalCTA /></div>
-        <Footer />
       </div>
     </>
   );

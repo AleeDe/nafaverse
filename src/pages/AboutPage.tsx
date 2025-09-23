@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { About } from '../components/About';
-import { Footer } from '../components/Footer';
 import { SkeletonLoader } from '../components/SkeletonLoader';
 import { ArrowUp } from 'lucide-react';
 import { useDashboard } from '../components/DashboardContext';
@@ -55,7 +54,6 @@ export function AboutPage() {
 	return (
 		<>
 			<About currentLanguage={currentLanguage} teamMembers={teamMembers} />
-			<Footer />
 
 			<button
 				onClick={scrollToTop}

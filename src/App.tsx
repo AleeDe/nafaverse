@@ -123,6 +123,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
+        <Footer />
       </BrowserRouter>
     </DashboardProvider>
   );
