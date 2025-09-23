@@ -48,21 +48,6 @@ export function AboutPage() {
 		return () => clearTimeout(timer);
 	}, []);
 
-	const content = {
-		en: {
-			title: 'About NafaVerse',
-			description:
-				'We are on a mission to empower Pakistanis with financial literacy, guided by Islamic principles.'
-		},
-		ur: {
-			title: 'NafaVerse کے بارے میں',
-			description:
-				'ہمارا مشن پاکستانیوں کو اسلامی اصولوں کے مطابق مالی خواندگی سے بااختیار بنانا ہے۔'
-		}
-	};
-
-	const t = content[currentLanguage];
-
 	if (loading) {
 		return <SkeletonLoader type="page" />;
 	}
@@ -78,11 +63,6 @@ export function AboutPage() {
 			>
 				<ArrowUp className="w-5 h-5" />
 			</button>
-
-			<div className="container mx-auto px-4 py-16 text-center">
-				<h1 className="text-4xl font-bold mb-4">{t.title}</h1>
-				<p className="text-lg">{t.description}</p>
-			</div>
 		</>
 	);
 }
