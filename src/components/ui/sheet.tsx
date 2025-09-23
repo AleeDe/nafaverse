@@ -85,10 +85,10 @@ export const SheetContent: React.FC<SheetContentProps> = ({ side = 'right', clas
   return (
     <>
       <div 
-        className="fixed inset-0 bg-black/50 z-50"
+        className="fixed inset-0 bg-black/50 z-50 animate-fadeIn"
         onClick={() => onOpenChange(false)}
       />
-      <div className={`fixed top-0 ${sideClasses[side]} h-full bg-white z-50 shadow-lg ${className}`}>
+      <div className={`fixed top-0 ${sideClasses[side]} h-full bg-white z-50 shadow-lg ${className} ${side === 'left' ? 'animate-slideInLeft' : 'animate-slideInRight'}`}>
         {children}
       </div>
     </>
@@ -96,7 +96,7 @@ export const SheetContent: React.FC<SheetContentProps> = ({ side = 'right', clas
 };
 
 export const SheetHeader: React.FC<SheetHeaderProps> = ({ children }) => {
-  return <div className="p-6 border-b">{children}</div>;
+  return <div className="p-6 border-b animate-fadeInUp">{children}</div>;
 };
 
 export const SheetTitle: React.FC<SheetTitleProps> = ({ className = '', children }) => {

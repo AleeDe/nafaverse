@@ -76,7 +76,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
 
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10 animate-fadeInUp">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-[#1E1B4B]/90 via-[#0F0A2E]/90 to-[#312E81]/90 backdrop-blur-md border-b border-[#A786DF]/20 animate-fadeInUp">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -90,21 +90,21 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
               <button
                 onClick={() => handleNavClick('home')}
                 className={`text-sm font-medium transition-all duration-300 hover-target hover-lift ${
-                  location.pathname === '/' ? 'text-[#00B8A9]' : 'text-white hover:text-[#00B8A9]'
+                  location.pathname === '/' ? 'text-[#A786DF]' : 'text-white hover:text-[#A786DF]'
                 }`}
               >
                 {t.home}
               </button>
               <button
                 onClick={() => handleNavClick('features')}
-                className="text-white hover:text-[#00B8A9] text-sm font-medium transition-all duration-300 hover-target hover-lift"
+                className="text-white hover:text-[#A786DF] text-sm font-medium transition-all duration-300 hover-target hover-lift"
               >
                 {t.features}
               </button>
               <button
                 onClick={() => handleNavClick('about')}
                 className={`text-sm font-medium transition-all duration-300 hover-target hover-lift ${
-                  location.pathname === '/about' ? 'text-[#00B8A9]' : 'text-white hover:text-[#00B8A9]'
+                  location.pathname === '/about' ? 'text-[#A786DF]' : 'text-white hover:text-[#A786DF]'
                 }`}
               >
                 {t.about}
@@ -112,7 +112,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
               <button
                 onClick={() => handleNavClick('contact')}
                 className={`text-sm font-medium transition-all duration-300 hover-target hover-lift ${
-                  location.pathname === '/contact' ? 'text-[#00B8A9]' : 'text-white hover:text-[#00B8A9]'
+                  location.pathname === '/contact' ? 'text-[#A786DF]' : 'text-white hover:text-[#A786DF]'
                 }`}
               >
                 {t.contact}
@@ -125,7 +125,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                 onClick={handleLanguageToggle}
                 variant="ghost"
                 size="sm"
-                className="text-white hover:bg-white/10 border border-white/20 hover-target hover-lift text-xs sm:text-sm"
+                className="text-white hover:bg-[#A786DF]/20 border border-[#A786DF]/30 hover-target hover-lift text-xs sm:text-sm"
               >
                 {t.language}
               </Button>
@@ -139,7 +139,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                       }}
                       variant="ghost"
                       size="sm"
-                      className="text-white hover:bg-white/10 hover-target hover-lift"
+                      className="text-white hover:bg-[#A786DF]/20 hover-target hover-lift"
                     >
                       Login
                     </Button>
@@ -176,7 +176,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="p-0 border-none w-full max-w-xs">
+                <SheetContent side="right" className="p-0 border-none w-full max-w-xs animate-slideInRight">
                   {/* Gradient/Blob Background */}
                   <div className="absolute inset-0 -z-10 bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81]">
                     <div className="absolute top-20 left-10 w-32 h-32 bg-[#8B5CF6] rounded-full blur-xl opacity-20 animate-float"></div>
@@ -194,7 +194,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                         handleNavClick('home');
                         setIsMobileMenuOpen(false);
                       }}
-                      className="text-white hover:text-[#00B8A9] text-left py-2 hover-target hover-lift transition-all duration-300"
+                      className="text-white hover:text-[#A786DF] text-left py-2 hover-target hover-lift transition-all duration-300"
                     >
                       {t.home}
                     </button>
@@ -203,7 +203,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                         handleNavClick('features');
                         setIsMobileMenuOpen(false);
                       }}
-                      className="text-white hover:text-[#00B8A9] text-left py-2 hover-target hover-lift transition-all duration-300"
+                      className="text-white hover:text-[#A786DF] text-left py-2 hover-target hover-lift transition-all duration-300"
                     >
                       {t.features}
                     </button>
@@ -212,7 +212,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                         handleNavClick('about');
                         setIsMobileMenuOpen(false);
                       }}
-                      className="text-white hover:text-[#00B8A9] text-left py-2 hover-target hover-lift transition-all duration-300"
+                      className="text-white hover:text-[#A786DF] text-left py-2 hover-target hover-lift transition-all duration-300"
                     >
                       {t.about}
                     </button>
@@ -221,7 +221,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                         handleNavClick('contact');
                         setIsMobileMenuOpen(false);
                       }}
-                      className="text-white hover:text-[#00B8A9] text-left py-2 hover-target hover-lift transition-all duration-300"
+                      className="text-white hover:text-[#A786DF] text-left py-2 hover-target hover-lift transition-all duration-300"
                     >
                       {t.contact}
                     </button>

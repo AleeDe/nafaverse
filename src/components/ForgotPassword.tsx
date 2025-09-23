@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { apiService } from '../api/apiService';
 import { useDashboard } from './DashboardContext';
 import { Toaster, toast } from 'sonner';
@@ -14,6 +15,8 @@ export const ForgotPassword = () => {
   } = useDashboard();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const content = {
     en: {
@@ -35,6 +38,23 @@ export const ForgotPassword = () => {
   const t = content[currentLanguage];
 
   if (!forgotPasswordModalOpen) return null;
+
+  // Click outside to close
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        setForgotPasswordModalOpen(false);
+      }
+    };
+
+    if (forgotPasswordModalOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [forgotPasswordModalOpen, setForgotPasswordModalOpen]);
 
   const handleClose = () => {
     setForgotPasswordModalOpen(false);
@@ -74,8 +94,8 @@ export const ForgotPassword = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="relative w-full max-w-md mx-auto">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
+      <div ref={modalRef} className="relative w-full max-w-md mx-auto animate-scaleIn">
         <div className="nv-card rounded-2xl overflow-hidden">
           <div className="nv-gradient-dark">
             <div className="p-6 border-b border-white/10 text-center">

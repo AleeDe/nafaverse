@@ -26,7 +26,13 @@ function CustomCursor() {
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (target.tagName === 'BUTTON' || target.tagName === 'A' || target.classList.contains('hover-target')) {
+      if (
+        target.tagName === 'BUTTON' || 
+        target.tagName === 'A' || 
+        target.classList.contains('hover-target') ||
+        target.closest('button') ||
+        target.closest('a')
+      ) {
         setIsHovering(true);
       } else {
         setIsHovering(false);
@@ -53,8 +59,8 @@ function CustomCursor() {
     <div
       className={`custom-cursor ${isHovering ? 'hover' : ''} ${isClicking ? 'click' : ''}`}
       style={{
-        left: `${position.x - 10}px`,
-        top: `${position.y - 10}px`,
+        left: `${position.x - 8}px`,
+        top: `${position.y - 8}px`,
       }}
     />
   );

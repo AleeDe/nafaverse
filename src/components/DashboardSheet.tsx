@@ -58,7 +58,7 @@ export const DashboardSheet: React.FC = () => {
 
   return (
     <Sheet open={dashboardOpen} onOpenChange={setDashboardOpen}>
-      <SheetContent side="left" className="w-80 bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81] border-[rgba(167,134,223,0.3)] p-0">
+      <SheetContent side="left" className="w-80 bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81] border-[rgba(167,134,223,0.3)] p-0 animate-slideInLeft">
          <div className="absolute inset-0 opacity-15">
               <div className="absolute top-20 left-10 w-32 h-32 bg-[#8B5CF6] rounded-full blur-xl"></div>
               <div className="absolute bottom-20 right-10 w-48 h-48 bg-[#F59E0B] rounded-full blur-xl"></div>

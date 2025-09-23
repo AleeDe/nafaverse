@@ -11,6 +11,10 @@
 
 /* Custom Cursor */
 * {
+  cursor: default;
+}
+
+button, a, .hover-target {
   cursor: none !important;
 }
 
@@ -18,23 +22,25 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 20px;
-  height: 20px;
-  background: linear-gradient(45deg, #8B5CF6, #60A5FA);
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(135deg, #A786DF, #00B8A9);
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
-  transition: transform 0.1s ease;
-  mix-blend-mode: difference;
+  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 0 20px rgba(167, 134, 223, 0.6);
 }
 
 .custom-cursor.hover {
-  transform: scale(2);
-  background: linear-gradient(45deg, #F59E0B, #8B5CF6);
+  transform: scale(2.5);
+  background: linear-gradient(135deg, #F59E0B, #8B5CF6);
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.8);
 }
 
 .custom-cursor.click {
-  transform: scale(0.8);
+  transform: scale(0.6);
+  background: linear-gradient(135deg, #EF4444, #F59E0B);
 }
 
 /* Smooth Animations */
@@ -107,6 +113,60 @@
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.9) translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1) translateY(0); 
+  }
+}
+
+@keyframes slideInLeft {
+  from { 
+    opacity: 0; 
+    transform: translateX(-100%); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes slideInRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(100%); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 html, body, #root { height: 100%; }

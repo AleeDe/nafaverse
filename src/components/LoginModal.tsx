@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { X, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { apiService } from '../api/apiService';
 import { useDashboard } from './DashboardContext';
@@ -20,6 +21,8 @@ export const LoginModal: React.FC = () => {
   const [formData, setFormData] = useState(initialForm);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const modalRef = useRef<HTMLDivElement>(null);
 
   // Validation state
   type Errs = { username: string; email: string; password: string; confirmPassword: string };
@@ -132,6 +135,23 @@ export const LoginModal: React.FC = () => {
 
   if (!loginModalOpen) return null;
 
+  // Click outside to close
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        setLoginModalOpen(false);
+      }
+    };
+
+    if (loginModalOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [loginModalOpen, setLoginModalOpen]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -196,9 +216,9 @@ export const LoginModal: React.FC = () => {
         !errors.confirmPassword;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fadeIn">
       <Toaster position="top-center" />
-      <div className="relative w-full max-w-md mx-auto">
+      <div ref={modalRef} className="relative w-full max-w-md mx-auto animate-scaleIn">
         <div className="nv-card rounded-2xl overflow-hidden">
           <div className="nv-gradient-dark">
             {/* Header */}
