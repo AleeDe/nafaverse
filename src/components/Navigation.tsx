@@ -10,12 +10,15 @@ import {
   SheetDescription,
   SheetTrigger,
 } from './ui/sheet';
-import { LoginModal } from './LoginModal';
 import { NafaVerseLogo } from './NafaVerseLogo';
 import { useDashboard } from './DashboardContext';
 import { apiService } from '../api/apiService';
 
-export const Navigation: React.FC = () => {
+interface NavigationProps {
+  onScrollToSection: (section: string) => void;
+}
+
+export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => {
   const {
     currentLanguage,
     setCurrentLanguage,
@@ -56,10 +59,10 @@ export const Navigation: React.FC = () => {
   const handleNavClick = (item: string) => {
     if (item === 'home') {
       navigate('/');
-      onScrollToSection?.('hero');
+      setTimeout(() => onScrollToSection('hero'), 100);
     } else if (item === 'features') {
       navigate('/');
-      setTimeout(() => onScrollToSection?.('journey'), 100);
+      setTimeout(() => onScrollToSection('journey'), 100);
     } else if (item === 'about') {
       navigate('/about');
     } else if (item === 'contact') {
@@ -80,7 +83,7 @@ export const Navigation: React.FC = () => {
   ];
 
   return (
-    <>
+    <div>
       <nav className="fixed top-0 left-0 right-0 z-50 bg-black md:bg-black/20 md:backdrop-blur-md border-b border-white/10">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 overflow-x-auto md:overflow-visible">
@@ -293,8 +296,6 @@ export const Navigation: React.FC = () => {
           </div>
         </div>
       </nav>
-
-      <LoginModal />
-    </>
+    </div>
   );
 };

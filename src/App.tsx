@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { handleGoogleOAuthCallback } from './api/apiService';
 import { useDashboard } from './components/DashboardContext';
@@ -32,12 +32,27 @@ function App() {
   const learnRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
 
+  const onScrollToSection = useCallback((section: string) => {
+    const refs = {
+      hero: heroRef,
+      journey: journeyRef,
+      graph: graphRef,
+      learn: learnRef,
+      cta: ctaRef,
+    };
+    
+    const targetRef = refs[section as keyof typeof refs];
+    if (targetRef?.current) {
+      targetRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, []);
+
   return (
     <DashboardProvider>
       <BrowserRouter>
         <AuthBootstrap /> {/* ensure this is mounted inside the provider */}
         <Toaster position="top-center" />
-        <Navigation />
+        <Navigation onScrollToSection={onScrollToSection} />
         <LoginModal />
         <ForgotPassword />
         <Routes>
