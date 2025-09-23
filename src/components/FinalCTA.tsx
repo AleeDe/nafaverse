@@ -1,12 +1,18 @@
 import React from 'react';
+import { useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
+import { SkeletonLoader } from './SkeletonLoader';
 import { Button } from './ui/button'; // Assuming you have a Button component
 
 export const FinalCTA: React.FC = () => {
   const { currentLanguage, setLoginModalOpen, setIsLoginMode, isAuthenticated } = useDashboard();
+  const [loading, setLoading] = useState(false);
 
   const handleProtectedAction = (action: string) => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
     if (!isAuthenticated) {
       setIsLoginMode(false); // Set to signup mode
       setLoginModalOpen(true);
@@ -14,6 +20,7 @@ export const FinalCTA: React.FC = () => {
       // Future: Navigate to protected pages
       console.log(`Navigate to ${action} page`);
     }
+    }, 1000);
   };
 
   const content = {
@@ -32,6 +39,10 @@ export const FinalCTA: React.FC = () => {
   } as const;
 
   const t = content[currentLanguage] || content.en;
+
+  if (loading) {
+    return <SkeletonLoader type="page" />;
+  }
 
   return (
     <section className="py-20 bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81] relative overflow-hidden px-2 sm:px-0 overflow-x-hidden">

@@ -1,12 +1,18 @@
 import React from 'react';
+import { useState } from 'react';
 import { Sparkles, TrendingUp, Gauge, ShieldCheck, Gamepad2 } from 'lucide-react';
 import { Button } from './ui/button';
+import { SkeletonLoader } from './SkeletonLoader';
 import { useDashboard } from './DashboardContext';
 
 export const HeroSection = () => {
   const { currentLanguage, isAuthenticated, setLoginModalOpen, setIsLoginMode } = useDashboard();
+  const [loading, setLoading] = useState(false);
 
   const handleProtectedAction = (action: string) => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
     if (!isAuthenticated) {
       setIsLoginMode(false); // Set to signup mode
       setLoginModalOpen(true);
@@ -14,6 +20,7 @@ export const HeroSection = () => {
       // Future: Navigate to protected pages
       console.log(`Navigate to ${action} page`);
     }
+    }, 1000);
   };
 
   const content = {
@@ -48,6 +55,10 @@ export const HeroSection = () => {
   } as const;
 
   const t = content[currentLanguage];
+
+  if (loading) {
+    return <SkeletonLoader type="page" />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81] relative overflow-hidden px-4 sm:px-6 lg:px-8">

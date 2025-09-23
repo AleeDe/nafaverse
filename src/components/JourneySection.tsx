@@ -1,12 +1,18 @@
 import React from 'react';
+import { useState } from 'react';
 import { Brain, Target, TrendingUp } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
+import { SkeletonLoader } from './SkeletonLoader';
 import { Button } from './ui/button'; // Assuming you have this from shadcn/ui
 
 export const JourneySection = () => {
   const { currentLanguage, setLoginModalOpen, setIsLoginMode, isAuthenticated } = useDashboard();
+  const [loading, setLoading] = useState(false);
 
   const handleProtectedAction = (action: string) => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
     if (!isAuthenticated) {
       setIsLoginMode(false); // Set to signup mode
       setLoginModalOpen(true);
@@ -14,6 +20,7 @@ export const JourneySection = () => {
       // Future: Navigate to protected pages based on action
       console.log(`Navigate to ${action} page`);
     }
+    }, 1000);
   };
 
   const content = {
@@ -42,6 +49,10 @@ export const JourneySection = () => {
   } as const;
 
   const t = content[currentLanguage] || content.en;
+
+  if (loading) {
+    return <SkeletonLoader type="page" />;
+  }
 
   const steps = [
     {

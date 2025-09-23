@@ -1,12 +1,18 @@
 import React from 'react';
+import { useState } from 'react';
 import { ArrowRight, CheckCircle2, Clock3, Trophy, Play, Brain } from 'lucide-react';
 import { Button } from './ui/button';
+import { SkeletonLoader } from './SkeletonLoader';
 import { useDashboard } from './DashboardContext';
 
 export const InteractiveLearnPlayEarn = () => {
   const { currentLanguage, setLoginModalOpen, setIsLoginMode, isAuthenticated } = useDashboard();
+  const [loading, setLoading] = useState(false);
 
   const handleProtectedAction = (action: string) => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
     if (!isAuthenticated) {
       setIsLoginMode(false); // Set to signup mode
       setLoginModalOpen(true);
@@ -14,6 +20,7 @@ export const InteractiveLearnPlayEarn = () => {
       // Future: Navigate to protected pages
       console.log(`Navigate to ${action} page`);
     }
+    }, 1000);
   };
 
   const content = {
@@ -52,6 +59,10 @@ export const InteractiveLearnPlayEarn = () => {
   } as const;
 
   const t = content[currentLanguage] || content.en;
+
+  if (loading) {
+    return <SkeletonLoader type="page" />;
+  }
 
   return (
     <section className="py-12 sm:py-20 bg-gradient-to-br from-purple-50/20 via-white to-orange-50/20">
