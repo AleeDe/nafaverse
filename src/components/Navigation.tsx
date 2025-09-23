@@ -282,3 +282,10 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
                     )}
                   </div>
                 </SheetContent>
+              </Sheet>
+            </div>
+        </div>
+      </div>
+    </nav>
+  );
+};
