@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Target, TrendingUp, Calculator, Plus, Minus, MapPin, GraduationCap, Home, Building2 } from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { Button } from '../components/ui/button';
 import { useDashboard } from '../components/DashboardContext';
 
@@ -10,6 +10,8 @@ export const GoalSimulationPage: React.FC = () => {
   const [goalSearchQuery, setGoalSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showGoalSuggestions, setShowGoalSuggestions] = useState(false);
+  const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
+  const [currentGoalPlaceholder, setCurrentGoalPlaceholder] = useState(0);
   const [simulationInputs, setSimulationInputs] = useState({
     roi: 12,
     time: 5,
@@ -77,7 +79,8 @@ export const GoalSimulationPage: React.FC = () => {
           icon: Building2
         }
       ],
-      suggestions: ['Marriage', 'Retirement', 'Car Purchase', 'Emergency Fund', 'Child Education', 'Vacation', 'Medical Emergency', 'Property Investment']
+      suggestions: ['Marriage', 'Retirement', 'Car Purchase', 'Emergency Fund', 'Child Education', 'Vacation', 'Medical Emergency', 'Property Investment'],
+      placeholders: ['Search for Marriage goals...', 'Find Retirement plans...', 'Look for Car financing...', 'Emergency fund planning...', 'Education savings...']
     },
     ur: {
       heroTitle: 'Apne Khwabon Ko Financial Goals Mein Tabdeel Karein',
@@ -128,11 +131,32 @@ export const GoalSimulationPage: React.FC = () => {
           icon: Building2
         }
       ],
-      suggestions: ['Shadi', 'Retirement', 'Gari', 'Emergency Fund', 'Bachon Ki Taleem', 'Vacation', 'Medical Emergency', 'Property Investment']
+      suggestions: ['Shadi', 'Retirement', 'Gari', 'Emergency Fund', 'Bachon Ki Taleem', 'Vacation', 'Medical Emergency', 'Property Investment'],
+      placeholders: ['Shadi ke goals search karein...', 'Retirement plans dhundein...', 'Gari financing dekhein...', 'Emergency fund planning...', 'Taleem ki savings...']
     }
   };
 
   const t = content[currentLanguage];
+
+  // Live typing effect for main search
+  useEffect(() => {
+    if (searchQuery.length === 0) {
+      const interval = setInterval(() => {
+        setCurrentPlaceholder((prev) => (prev + 1) % t.placeholders.length);
+      }, 2000);
+      return () => clearInterval(interval);
+    }
+  }, [searchQuery, t.placeholders.length]);
+
+  // Live typing effect for goal search
+  useEffect(() => {
+    if (goalSearchQuery.length === 0) {
+      const interval = setInterval(() => {
+        setCurrentGoalPlaceholder((prev) => (prev + 1) % t.placeholders.length);
+      }, 2000);
+      return () => clearInterval(interval);
+    }
+  }, [goalSearchQuery, t.placeholders.length]);
 
   const handleInputChange = (field: string, value: number) => {
     setSimulationInputs(prev => ({ ...prev, [field]: value }));
@@ -167,30 +191,12 @@ export const GoalSimulationPage: React.FC = () => {
     scrollToSection(resultRef);
   };
 
-  const getSuggestions = (query: string, isGoalSearch: boolean = false) => {
-    if (!query) return [];
+  const getSuggestions = (query: string) => {
+    if (!query) return t.suggestions.slice(0, 5);
     return t.suggestions.filter(suggestion => 
       suggestion.toLowerCase().includes(query.toLowerCase())
     ).slice(0, 5);
   };
-
-  // Live typing effect for main search
-  useEffect(() => {
-    if (searchQuery.length > 0) {
-      setShowSuggestions(true);
-    } else {
-      setShowSuggestions(false);
-    }
-  }, [searchQuery]);
-
-  // Live typing effect for goal search
-  useEffect(() => {
-    if (goalSearchQuery.length > 0) {
-      setShowGoalSuggestions(true);
-    } else {
-      setShowGoalSuggestions(false);
-    }
-  }, [goalSearchQuery]);
 
   return (
     <div className="min-h-screen pt-16 relative overflow-hidden">
@@ -204,7 +210,7 @@ export const GoalSimulationPage: React.FC = () => {
         </div>
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-12 leading-tight">
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-12 leading-tight font-display">
             {t.heroTitle}
           </h1>
           
@@ -214,12 +220,12 @@ export const GoalSimulationPage: React.FC = () => {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder={t.searchPlaceholder}
+                placeholder={searchQuery.length === 0 ? t.placeholders[currentPlaceholder] : t.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => searchQuery.length > 0 && setShowSuggestions(true)}
+                onFocus={() => setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg backdrop-blur-sm"
+                className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg backdrop-blur-sm transition-all duration-300"
               />
             </div>
             
@@ -269,47 +275,49 @@ export const GoalSimulationPage: React.FC = () => {
       {/* Frame 2: Goals Section - Light Theme */}
       <section ref={goalsRef} className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-white to-purple-50/30 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12 font-display">
             {t.goalsTitle}
           </h2>
 
-          {/* Professional Goals Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          {/* Compact Professional Goals Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
             {t.goals.map((goal, index) => {
               const IconComponent = goal.icon;
               return (
-                <div key={index} className="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer hover:scale-105 overflow-hidden border border-gray-100">
-                  <div className="p-8">
-                    <div className="flex items-start justify-between mb-6">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center">
-                          <IconComponent className="w-6 h-6 text-white" />
+                <div key={index} className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-[1.02] overflow-hidden border border-gray-100/50 p-6">
+                  <div className="flex items-start justify-between gap-4">
+                    {/* Left side - Icon and Text */}
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                          <IconComponent className="w-4 h-4 text-white" />
                         </div>
-                        <div>
-                          <h3 className="text-2xl font-bold text-gray-900 mb-1">{goal.name}</h3>
-                          <div className="flex items-center gap-4 text-sm text-gray-600">
-                            <span className="font-semibold text-purple-600">{goal.amount}</span>
-                            <span>•</span>
-                            <span>{goal.duration}</span>
-                          </div>
-                        </div>
+                        <h3 className="text-lg font-bold text-gray-900">{goal.name}</h3>
                       </div>
-                      <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 shadow-lg">
-                        <img 
-                          src={goal.image} 
-                          alt={goal.name}
-                          className="w-full h-full object-cover"
-                        />
+                      
+                      <p className="text-sm text-gray-600 leading-relaxed mb-4 line-clamp-2">
+                        {goal.desc}
+                      </p>
+                      
+                      <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
+                        <span className="font-semibold text-purple-600">{goal.amount}</span>
+                        <span>•</span>
+                        <span>{goal.duration}</span>
                       </div>
+                      
+                      <Button className="w-full bg-gradient-to-r from-purple-600 to-orange-500 text-white font-medium py-2 rounded-lg hover:shadow-md hover:shadow-purple-500/20 transform hover:scale-105 transition-all duration-300 text-sm">
+                        {t.startPlanning}
+                      </Button>
                     </div>
                     
-                    <p className="text-gray-700 leading-relaxed mb-6">
-                      {goal.desc}
-                    </p>
-                    
-                    <Button className="w-full bg-gradient-to-r from-purple-600 to-orange-500 text-white font-semibold py-3 rounded-xl hover:shadow-lg hover:shadow-purple-500/30 transform hover:scale-105 transition-all duration-300">
-                      {t.startPlanning}
-                    </Button>
+                    {/* Right side - Large Image */}
+                    <div className="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 shadow-md">
+                      <img 
+                        src={goal.image} 
+                        alt={goal.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   </div>
                 </div>
               );
@@ -322,19 +330,19 @@ export const GoalSimulationPage: React.FC = () => {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder={t.goalSearchPlaceholder}
+                placeholder={goalSearchQuery.length === 0 ? t.placeholders[currentGoalPlaceholder] : t.goalSearchPlaceholder}
                 value={goalSearchQuery}
                 onChange={(e) => setGoalSearchQuery(e.target.value)}
-                onFocus={() => goalSearchQuery.length > 0 && setShowGoalSuggestions(true)}
+                onFocus={() => setShowGoalSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowGoalSuggestions(false), 200)}
-                className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border-2 border-gray-200 text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 shadow-lg"
+                className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/90 backdrop-blur-sm border-2 border-gray-200/50 text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 shadow-lg transition-all duration-300"
               />
             </div>
             
             {/* Live Goal Suggestions Dropdown */}
-            {showGoalSuggestions && getSuggestions(goalSearchQuery, true).length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white border-2 border-gray-200 rounded-xl overflow-hidden z-20 shadow-xl animate-fadeIn">
-                {getSuggestions(goalSearchQuery, true).map((suggestion, index) => (
+            {showGoalSuggestions && getSuggestions(goalSearchQuery).length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl overflow-hidden z-20 shadow-xl animate-fadeIn">
+                {getSuggestions(goalSearchQuery).map((suggestion, index) => (
                   <div
                     key={index}
                     className="px-4 py-3 text-gray-900 hover:bg-purple-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0 flex items-center gap-3"
@@ -362,7 +370,7 @@ export const GoalSimulationPage: React.FC = () => {
         </div>
 
         <div className="max-w-4xl mx-auto relative z-10">
-          <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12 font-display">
             {t.simulateTitle}
           </h2>
 
@@ -486,56 +494,117 @@ export const GoalSimulationPage: React.FC = () => {
       {/* Frame 4: Simulation Result - Light Theme */}
       {simulationResult && (
         <section ref={resultRef} className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-white to-purple-50/30 relative z-10">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-4 font-display">
               {t.resultTitle}
             </h2>
+            <p className="text-gray-600 text-center mb-12">Define a goal above to see your progress.</p>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Results Summary */}
-              <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
-                <h3 className="text-xl font-bold text-gray-900 mb-6">Investment Summary</h3>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                    <span className="text-gray-600 font-medium">Monthly Investment:</span>
-                    <span className="text-gray-900 font-bold text-lg">PKR {simulationResult.monthlyInvestment.toLocaleString()}</span>
+              {/* Results Summary - Sleek Cards */}
+              <div className="space-y-4">
+                {/* Sample Goal Progress */}
+                <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100/50">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                      <span className="text-purple-400 font-medium">Sample Goal</span>
+                    </div>
+                    <span className="text-gray-900 font-bold">PKR {simulationInputs.initialAmount.toLocaleString()} / PKR {simulationInputs.targetAmount.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                    <span className="text-gray-600 font-medium">Initial Amount:</span>
-                    <span className="text-gray-900 font-bold text-lg">PKR {simulationInputs.initialAmount.toLocaleString()}</span>
+                  <div className="mb-4">
+                    <div className="text-sm text-gray-600 mb-2">35% completed</div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-gradient-to-r from-purple-500 to-orange-500 h-2 rounded-full" style={{ width: '35%' }}></div>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                    <span className="text-gray-600 font-medium">Target Amount:</span>
-                    <span className="text-purple-600 font-bold text-lg">PKR {simulationInputs.targetAmount.toLocaleString()}</span>
+                </div>
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100/50">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                      <span className="text-gray-600 text-sm">Target Amount</span>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">PKR {(simulationInputs.targetAmount/1000).toFixed(0)}k</div>
                   </div>
-                  <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                    <span className="text-gray-600 font-medium">Time Period:</span>
-                    <span className="text-gray-900 font-bold text-lg">{simulationInputs.time} years</span>
+                  
+                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100/50">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                      <span className="text-gray-600 text-sm">Amount Saved</span>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">PKR {(simulationInputs.initialAmount/1000).toFixed(0)}k</div>
                   </div>
-                  <div className="flex justify-between items-center py-3">
-                    <span className="text-gray-600 font-medium">Expected ROI:</span>
-                    <span className="text-green-600 font-bold text-lg">{simulationInputs.roi}%</span>
+                  
+                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100/50">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                      <span className="text-gray-600 text-sm">Estimated Completion</span>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">Dec 2025</div>
+                  </div>
+                  
+                  <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100/50">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                      <span className="text-gray-600 text-sm">Monthly Contribution</span>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900">PKR {simulationResult.monthlyInvestment > 0 ? (simulationResult.monthlyInvestment/1000).toFixed(0) + 'k' : '5k'}</div>
                   </div>
                 </div>
               </div>
 
-              {/* Chart */}
-              <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
-                <h3 className="text-xl font-bold text-gray-900 mb-6">Growth Projection</h3>
-                <div className="h-64">
+              {/* Sleek Modern Chart */}
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100/50">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-bold text-gray-900">Progress Projection</h3>
+                  <span className="text-sm text-gray-500">PKR 100k</span>
+                </div>
+                <div className="h-64 relative">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={simulationResult.chartData}>
-                      <XAxis dataKey="year" stroke="#6B7280" />
-                      <YAxis stroke="#6B7280" tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} />
+                      <XAxis 
+                        dataKey="year" 
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 12, fill: '#9CA3AF' }}
+                      />
+                      <YAxis 
+                        axisLine={false}
+                        tickLine={false}
+                        tick={{ fontSize: 12, fill: '#9CA3AF' }}
+                        tickFormatter={(v) => `PKR ${(v/1000).toFixed(0)}k`}
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)', 
+                          border: 'none', 
+                          borderRadius: '12px',
+                          boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
+                        }}
+                        formatter={(value: number) => [`PKR ${value.toLocaleString()}`, 'Amount']}
+                      />
                       <Line 
                         type="monotone" 
                         dataKey="amount" 
-                        stroke="#8B5CF6" 
+                        stroke="url(#gradient)"
                         strokeWidth={3}
-                        dot={{ fill: '#8B5CF6', r: 4 }}
+                        dot={{ fill: '#8B5CF6', strokeWidth: 2, r: 4 }}
+                        activeDot={{ r: 6, fill: '#F59E0B' }}
                       />
+                      <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stopColor="#8B5CF6" />
+                          <stop offset="100%" stopColor="#F59E0B" />
+                        </linearGradient>
+                      </defs>
                     </LineChart>
                   </ResponsiveContainer>
+                </div>
+                <div className="text-center mt-4">
+                  <span className="text-sm text-gray-500">Months → Progress Timeline</span>
                 </div>
               </div>
             </div>
