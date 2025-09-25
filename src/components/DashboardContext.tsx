@@ -78,8 +78,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [forgotPasswordModalOpen, setForgotPasswordModalOpen] = useState(false);
 
   // Auth state
-  const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<User>(null);
+  const [token, setToken] = useState<string | null>('demo-token');
+  const [user, setUser] = useState<User>({ username: 'Demo User', email: 'demo@nafaverse.com' });
 
   const refreshAuthFromStorage = () => {
     const t = localStorage.getItem('token') || readCookie('token');

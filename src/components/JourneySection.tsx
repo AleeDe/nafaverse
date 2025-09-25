@@ -13,31 +13,13 @@ export const JourneySection = () => {
   const navigate = useNavigate();
 
   const handleProtectedAction = (action: string) => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      if (!isAuthenticated) {
-        setIsLoginMode(false); // Set to signup mode
-        setLoginModalOpen(true);
-      } else {
-        // Navigate to goal simulation page for authenticated users
-        navigate('/goal-simulation');
-      }
-    }, 1000);
+    // Direct navigation since user is assumed to be logged in
+    navigate('/goal-simulation');
   };
 
   const handleStepClick = (stepIndex: number, stepType: string) => {
-    setLoadingStep(stepIndex);
-    setTimeout(() => {
-      setLoadingStep(null);
-      if (!isAuthenticated) {
-        setIsLoginMode(false); // Set to signup mode
-        setLoginModalOpen(true);
-      } else {
-        // Navigate to goal simulation page for all steps
-        navigate('/goal-simulation');
-      }
-    }, 1000);
+    // Direct navigation since user is assumed to be logged in
+    navigate('/goal-simulation');
   };
   const content = {
     en: {
