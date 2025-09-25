@@ -280,14 +280,14 @@ export const GoalSimulationPage: React.FC = () => {
           </h2>
 
           {/* Compact Professional Goals Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 max-w-5xl mx-auto">
             {t.goals.map((goal, index) => {
               const IconComponent = goal.icon;
               return (
-                <div key={index} className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-[1.02] overflow-hidden border border-gray-100">
-                  <div className="flex h-48">
+                <div key={index} className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-[1.02] overflow-hidden border border-gray-200/50">
+                  <div className="flex h-32">
                     {/* Left side - Full Image */}
-                    <div className="w-1/2 overflow-hidden">
+                    <div className="w-2/5 overflow-hidden">
                       <img 
                         src={goal.image} 
                         alt={goal.name}
@@ -296,22 +296,22 @@ export const GoalSimulationPage: React.FC = () => {
                     </div>
                     
                     {/* Right side - Text Content */}
-                    <div className="w-1/2 p-6 flex flex-col justify-between">
+                    <div className="w-3/5 p-4 flex flex-col justify-between">
                       <div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-3">{goal.name}</h3>
-                        <p className="text-sm text-gray-600 leading-relaxed mb-4">
-                          {goal.desc}
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{goal.name}</h3>
+                        <p className="text-xs text-gray-500 mb-3 leading-relaxed">
+                          {goal.desc.split('.')[0]}.
                         </p>
                       </div>
                       
                       <div>
-                        <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-                          <span className="font-semibold text-purple-600">{goal.amount}</span>
+                        <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
+                          <span className="font-semibold text-teal-600">{goal.amount}</span>
                           <span>•</span>
                           <span>{goal.duration}</span>
                         </div>
                         
-                        <Button className="w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-medium py-2.5 rounded-lg hover:shadow-md hover:shadow-teal-500/20 transform hover:scale-105 transition-all duration-300 text-sm">
+                        <Button className="w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 rounded-lg hover:shadow-md transition-all duration-300 text-xs">
                           Start Goal →
                         </Button>
                       </div>
