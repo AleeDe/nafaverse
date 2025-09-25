@@ -42,10 +42,10 @@ export const GoalSimulationPage: React.FC = () => {
       initialAmount: 'Initial Amount (PKR)',
       targetAmount: 'Target Amount (PKR)',
       goals: [
-        { name: 'Hajj/Umrah', desc: 'Sacred journey to Makkah', image: '🕋' },
-        { name: 'Dream House', desc: 'Your own home', image: '🏠' },
-        { name: 'Study Abroad', desc: 'International education', image: '🎓' },
-        { name: 'Start Business', desc: 'Your own startup', image: '💼' }
+        { name: 'Hajj/Umrah', desc: 'Sacred journey to Makkah', image: '/images/kaaba image final.jpg' },
+        { name: 'Dream House', desc: 'Your own home', image: '/images/home image.jpg' },
+        { name: 'Study Abroad', desc: 'International education', image: '/images/univeristy image.jpg' },
+        { name: 'Start Business', desc: 'Your own startup', image: '/images/startup.jpg' }
       ],
       suggestions: ['Marriage', 'Retirement', 'Car Purchase', 'Emergency Fund', 'Child Education']
     },
@@ -64,10 +64,10 @@ export const GoalSimulationPage: React.FC = () => {
       initialAmount: 'Shuru Ki Raqam (PKR)',
       targetAmount: 'Target Raqam (PKR)',
       goals: [
-        { name: 'Hajj/Umrah', desc: 'Makkah ka muqaddas safar', image: '🕋' },
-        { name: 'Ghar', desc: 'Apna ghar', image: '🏠' },
-        { name: 'Bahar Parhai', desc: 'International taleem', image: '🎓' },
-        { name: 'Business', desc: 'Apna startup', image: '💼' }
+        { name: 'Hajj/Umrah', desc: 'Makkah ka muqaddas safar', image: '/images/kaaba image final.jpg' },
+        { name: 'Ghar', desc: 'Apna ghar', image: '/images/home image.jpg' },
+        { name: 'Bahar Parhai', desc: 'International taleem', image: '/images/univeristy image.jpg' },
+        { name: 'Business', desc: 'Apna startup', image: '/images/startup.jpg' }
       ],
       suggestions: ['Shadi', 'Retirement', 'Gari', 'Emergency Fund', 'Bachon Ki Taleem']
     }
@@ -172,12 +172,18 @@ export const GoalSimulationPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
             {t.goals.map((goal, index) => (
               <div key={index} className="nv-card p-6 hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-105">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 pr-4">
                     <h3 className="text-xl font-bold text-white mb-2">{goal.name}</h3>
                     <p className="text-purple-100/80">{goal.desc}</p>
                   </div>
-                  <div className="text-4xl ml-4">{goal.image}</div>
+                  <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
+                    <img 
+                      src={goal.image} 
+                      alt={goal.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 </div>
               </div>
             ))}
