@@ -8,6 +8,7 @@ import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ResetPassword } from './components/ResetPassword';
+import { GoalSimulationPage } from './pages/GoalSimulationPage';
 import { DashboardProvider } from './components/DashboardContext';
 import { Toaster } from 'sonner';
 import { LoginModal } from './components/LoginModal';
@@ -123,6 +124,7 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/goal-simulation" element={<GoalSimulationPage />} />
         </Routes>
         <Footer />
       </BrowserRouter>

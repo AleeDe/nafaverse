@@ -4,22 +4,24 @@ import { Sparkles } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
 import { SkeletonLoader } from './SkeletonLoader';
 import { Button } from './ui/button'; // Assuming you have a Button component
+import { useNavigate } from 'react-router-dom';
 
 export const FinalCTA: React.FC = () => {
   const { currentLanguage, setLoginModalOpen, setIsLoginMode, isAuthenticated } = useDashboard();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleProtectedAction = (action: string) => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-    if (!isAuthenticated) {
-      setIsLoginMode(false); // Set to signup mode
-      setLoginModalOpen(true);
-    } else {
-      // Future: Navigate to protected pages
-      console.log(`Navigate to ${action} page`);
-    }
+      if (!isAuthenticated) {
+        setIsLoginMode(false); // Set to signup mode
+        setLoginModalOpen(true);
+      } else {
+        // Navigate to goal simulation page for authenticated users
+        navigate('/goal-simulation');
+      }
     }, 1000);
   };
 
