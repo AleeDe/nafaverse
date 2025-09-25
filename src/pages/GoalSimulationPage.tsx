@@ -116,9 +116,16 @@ export const GoalSimulationPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81] pt-16">
+    <div className="min-h-screen bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81] pt-16 relative overflow-hidden">
+      {/* Background blobs */}
+      <div className="absolute inset-0 opacity-15">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-[#8B5CF6] rounded-full blur-xl animate-float"></div>
+        <div className="absolute bottom-20 right-10 w-48 h-48 bg-[#F59E0B] rounded-full blur-xl animate-pulse-custom"></div>
+        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-[#8B5CF6]/50 rounded-full blur-2xl transform -translate-x-1/2 -translate-y-1/2 animate-float"></div>
+      </div>
+
       {/* Frame 1: Hero Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-12 leading-tight">
             {t.heroTitle}
@@ -162,7 +169,7 @@ export const GoalSimulationPage: React.FC = () => {
       </section>
 
       {/* Frame 2: Goals Section */}
-      <section ref={goalsRef} className="py-20 px-4 sm:px-6 lg:px-8 bg-white/5">
+      <section ref={goalsRef} className="py-20 px-4 sm:px-6 lg:px-8 bg-white/5 relative z-10">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">
             {t.goalsTitle}
@@ -229,7 +236,7 @@ export const GoalSimulationPage: React.FC = () => {
       </section>
 
       {/* Frame 3: Simulation Inputs */}
-      <section ref={simulateRef} className="py-20 px-4 sm:px-6 lg:px-8">
+      <section ref={simulateRef} className="py-20 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">
             {t.simulateTitle}
@@ -354,7 +361,7 @@ export const GoalSimulationPage: React.FC = () => {
 
       {/* Frame 4: Simulation Result */}
       {simulationResult && (
-        <section ref={resultRef} className="py-20 px-4 sm:px-6 lg:px-8 bg-white/5">
+        <section ref={resultRef} className="py-20 px-4 sm:px-6 lg:px-8 bg-white/5 relative z-10">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">
               {t.resultTitle}
