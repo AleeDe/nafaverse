@@ -284,39 +284,37 @@ export const GoalSimulationPage: React.FC = () => {
             {t.goals.map((goal, index) => {
               const IconComponent = goal.icon;
               return (
-                <div key={index} className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-[1.02] overflow-hidden border border-gray-100/50 p-6">
-                  <div className="flex items-start justify-between gap-4">
-                    {/* Left side - Icon and Text */}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                          <IconComponent className="w-4 h-4 text-white" />
-                        </div>
-                        <h3 className="text-lg font-bold text-gray-900">{goal.name}</h3>
-                      </div>
-                      
-                      <p className="text-sm text-gray-600 leading-relaxed mb-4 line-clamp-2">
-                        {goal.desc}
-                      </p>
-                      
-                      <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
-                        <span className="font-semibold text-purple-600">{goal.amount}</span>
-                        <span>•</span>
-                        <span>{goal.duration}</span>
-                      </div>
-                      
-                      <Button className="w-full bg-gradient-to-r from-purple-600 to-orange-500 text-white font-medium py-2 rounded-lg hover:shadow-md hover:shadow-purple-500/20 transform hover:scale-105 transition-all duration-300 text-sm">
-                        {t.startPlanning}
-                      </Button>
-                    </div>
-                    
-                    {/* Right side - Large Image */}
-                    <div className="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 shadow-md">
+                <div key={index} className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-[1.02] overflow-hidden border border-gray-100">
+                  <div className="flex h-48">
+                    {/* Left side - Full Image */}
+                    <div className="w-1/2 overflow-hidden">
                       <img 
                         src={goal.image} 
                         alt={goal.name}
                         className="w-full h-full object-cover"
                       />
+                    </div>
+                    
+                    {/* Right side - Text Content */}
+                    <div className="w-1/2 p-6 flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-3">{goal.name}</h3>
+                        <p className="text-sm text-gray-600 leading-relaxed mb-4">
+                          {goal.desc}
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+                          <span className="font-semibold text-purple-600">{goal.amount}</span>
+                          <span>•</span>
+                          <span>{goal.duration}</span>
+                        </div>
+                        
+                        <Button className="w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white font-medium py-2.5 rounded-lg hover:shadow-md hover:shadow-teal-500/20 transform hover:scale-105 transition-all duration-300 text-sm">
+                          Start Goal →
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
