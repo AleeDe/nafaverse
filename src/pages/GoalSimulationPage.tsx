@@ -1,8 +1,61 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Search, Target, TrendingUp, Calculator, Plus, Minus, MapPin, GraduationCap, Home, Building2 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { Button } from '../components/ui/button';
 import { useDashboard } from '../components/DashboardContext';
+
+// Typewriter hook with cleanup
+function useTypewriter(
+  phrases: string[],
+  opts?: { typeSpeed?: number; pause?: number; backspace?: boolean; backSpeed?: number }
+) {
+  const { typeSpeed = 70, pause = 1500, backspace = false, backSpeed = 35 } = opts || {};
+  const [text, setText] = useState('');
+  useEffect(() => {
+    let i = 0;           // phrase index
+    let pos = 0;         // char position
+    let deleting = false;
+    let timer: number;
+
+    const tick = () => {
+      const current = phrases[i % phrases.length] || '';
+      if (!deleting) {
+        if (pos <= current.length) {
+          setText(current.slice(0, pos));
+          pos += 1;
+          timer = window.setTimeout(tick, typeSpeed);
+        } else {
+          if (backspace) {
+            deleting = true;
+            timer = window.setTimeout(tick, pause);
+          } else {
+            // jump to next phrase after pause
+            timer = window.setTimeout(() => {
+              pos = 0;
+              i = (i + 1) % phrases.length;
+              tick();
+            }, pause);
+          }
+        }
+      } else {
+        if (pos >= 0) {
+          setText(current.slice(0, pos));
+          pos -= 1;
+          timer = window.setTimeout(tick, backSpeed);
+        } else {
+          deleting = false;
+          i = (i + 1) % phrases.length;
+          timer = window.setTimeout(tick, 300);
+        }
+      }
+    };
+
+    tick();
+    return () => clearTimeout(timer);
+  }, [phrases, typeSpeed, pause, backspace, backSpeed]);
+
+  return text;
+}
 
 export const GoalSimulationPage: React.FC = () => {
   const { currentLanguage } = useDashboard();
@@ -10,12 +63,6 @@ export const GoalSimulationPage: React.FC = () => {
   const [goalSearchQuery, setGoalSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showGoalSuggestions, setShowGoalSuggestions] = useState(false);
-  const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
-  const [currentGoalPlaceholder, setCurrentGoalPlaceholder] = useState(0);
-  const [typedText, setTypedText] = useState('');
-  const [isTyping, setIsTyping] = useState(true);
-  const [typedGoalText, setTypedGoalText] = useState('');
-  const [isGoalTyping, setIsGoalTyping] = useState(true);
   const [simulationInputs, setSimulationInputs] = useState({
     roi: 12,
     time: 5,
@@ -142,55 +189,62 @@ export const GoalSimulationPage: React.FC = () => {
 
   const t = content[currentLanguage];
 
-  // Live typing effect for main search
-  useEffect(() => {
-    if (searchQuery.length === 0) {
-      const currentText = t.placeholders[currentPlaceholder];
-      let charIndex = 0;
-      
-      const typeText = () => {
-        if (charIndex < currentText.length) {
-          setTypedText(currentText.slice(0, charIndex + 1));
-          charIndex++;
-          setTimeout(typeText, 100); // Type each character every 100ms
-        } else {
-          // Wait 2 seconds then move to next placeholder
-          setTimeout(() => {
-            setCurrentPlaceholder((prev) => (prev + 1) % t.placeholders.length);
-            setTypedText('');
-            charIndex = 0;
-          }, 2000);
-        }
-      };
-      
-      typeText();
-    }
-  }, [searchQuery, currentPlaceholder, t.placeholders]);
+  // Stable phrases list per language
+  const heroPhrases = useMemo(() => t.placeholders.slice(), [currentLanguage]);
+  const typedMain = useTypewriter(heroPhrases, { typeSpeed: 70, pause: 1600, backspace: false });
+
+  // Add: goal search placeholder typing state
+  const [goalPlaceholderIdx, setGoalPlaceholderIdx] = useState(0);
+  const [typedGoalText, setTypedGoalText] = useState('');
+
+  // Add: phrases for the goal search placeholder (EN/UR)
+  const goalPlaceholderPhrases = useMemo(
+    () =>
+      currentLanguage === 'ur'
+        ? [
+            'Shadi ke goals dhoondh rahe hain...',
+            'Ghar ke goals dhoondh rahe hain...',
+            'Umrah ke goals dhoondh rahe hain...',
+          ]
+        : [
+            'Searching for marriage goals...',
+            'Searching for house goals...',
+            'Searching for Umrah goals...',
+          ],
+    [currentLanguage]
+  );
 
   // Live typing effect for goal search
   useEffect(() => {
-    if (goalSearchQuery.length === 0) {
-      const currentText = t.placeholders[currentGoalPlaceholder];
-      let charIndex = 0;
-      
-      const typeText = () => {
-        if (charIndex < currentText.length) {
-          setTypedGoalText(currentText.slice(0, charIndex + 1));
-          charIndex++;
-          setTimeout(typeText, 100); // Type each character every 100ms
-        } else {
-          // Wait 2 seconds then move to next placeholder
-          setTimeout(() => {
-            setCurrentGoalPlaceholder((prev) => (prev + 1) % t.placeholders.length);
-            setTypedGoalText('');
-            charIndex = 0;
-          }, 2000);
-        }
-      };
-      
-      typeText();
+    if (goalSearchQuery) {
+      setTypedGoalText('');
+      return;
     }
-  }, [goalSearchQuery, currentGoalPlaceholder, t.placeholders]);
+    let i = 0;
+    let cancelled = false;
+    const phrase =
+      goalPlaceholderPhrases[goalPlaceholderIdx % goalPlaceholderPhrases.length] || '';
+
+    const type = () => {
+      if (cancelled) return;
+      if (i <= phrase.length) {
+        setTypedGoalText(phrase.slice(0, i));
+        i += 1;
+        window.setTimeout(type, 60);
+      } else {
+        window.setTimeout(() => {
+          if (cancelled) return;
+          setTypedGoalText('');
+          setGoalPlaceholderIdx((prev) => (prev + 1) % goalPlaceholderPhrases.length);
+        }, 1300);
+      }
+    };
+
+    type();
+    return () => {
+      cancelled = true;
+    };
+  }, [goalSearchQuery, goalPlaceholderIdx, goalPlaceholderPhrases]);
 
   const handleInputChange = (field: string, value: number) => {
     setSimulationInputs(prev => ({ ...prev, [field]: value }));
@@ -234,7 +288,7 @@ export const GoalSimulationPage: React.FC = () => {
 
   return (
     <div className="min-h-screen pt-16 relative overflow-hidden">
-      {/* Frame 1: Hero Section - Dark Theme */}
+      {/* Frame 1: Hero Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 relative z-10 bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81]">
         {/* Background blobs */}
         <div className="absolute inset-0 opacity-15">
@@ -248,40 +302,16 @@ export const GoalSimulationPage: React.FC = () => {
             {t.heroTitle}
           </h1>
           
-          {/* Search Bar with Live Typing */}
-          <div className="relative max-w-2xl mx-auto mb-12">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder={searchQuery.length === 0 ? t.placeholders[currentPlaceholder] : t.searchPlaceholder}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setShowSuggestions(true)}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/10 border border-white/20 text-white placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg backdrop-blur-sm transition-all duration-300"
-              />
+            {/* Live typing display only (no input/dropdown) */}
+            <div className="relative max-w-2xl mx-auto mb-12">
+            <div
+              aria-live="polite"
+              className="w-full px-6 py-4 rounded-2xl bg-white/10 border border-white/20 text-white text-lg backdrop-blur-sm"
+            >
+              {typedMain || heroPhrases[0]}
+              <span className="ml-1 opacity-80 animate-pulse">|</span>
             </div>
-            
-            {/* Live Suggestions Dropdown */}
-            {showSuggestions && getSuggestions(searchQuery).length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl overflow-hidden z-20 animate-fadeIn">
-                {getSuggestions(searchQuery).map((suggestion, index) => (
-                  <div
-                    key={index}
-                    className="px-4 py-3 text-white hover:bg-white/10 cursor-pointer transition-colors border-b border-white/10 last:border-b-0 flex items-center gap-3"
-                    onClick={() => {
-                      setSearchQuery(suggestion);
-                      setShowSuggestions(false);
-                    }}
-                  >
-                    <Search className="w-4 h-4 text-gray-400" />
-                    <span>{suggestion}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+            </div>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
@@ -317,41 +347,85 @@ export const GoalSimulationPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 max-w-5xl mx-auto">
             {t.goals.map((goal, index) => {
               const IconComponent = goal.icon;
+
+              const parseGoalAmount = (amountStr: string) => {
+                if (!amountStr) return simulationInputs.targetAmount;
+                let s = amountStr.replace(/PKR|\s|,/gi, '').toLowerCase();
+                let mult = 1;
+                if (s.endsWith('k')) {
+                  mult = 1000;
+                  s = s.slice(0, -1);
+                } else if (s.endsWith('m')) {
+                  mult = 1000000;
+                  s = s.slice(0, -1);
+                }
+                const n = parseFloat(s) || 0;
+                return Math.round(n * mult);
+              };
+
+              const handleStartGoal = () => {
+                const parsed = parseGoalAmount(goal.amount);
+                setSimulationInputs(prev => ({ ...prev, targetAmount: parsed }));
+                // smooth scroll to simulation and focus first input
+                scrollToSection(simulateRef);
+                // optionally focus target input, give small timeout for scroll
+                setTimeout(() => {
+                  const el = document.querySelector<HTMLInputElement>('input[name="targetAmount"]');
+                  el?.focus();
+                }, 480);
+              };
+
               return (
-                <div key={index} className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-[1.02] overflow-hidden border border-gray-200/50 h-32">
-                  <div className="flex h-full">
-                    {/* Left side - Image */}
-                    <div className="w-2/5 overflow-hidden rounded-l-xl">
-                      <img 
-                        src={goal.image} 
+                <article
+                  key={index}
+                  role="button"
+                  aria-label={`Start goal ${goal.name}`}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleStartGoal(); }}
+                  onClick={handleStartGoal}
+                  tabIndex={0}
+                  className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer transform hover:scale-[1.02] overflow-hidden border border-gray-200/50 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                >
+                  <div className="flex flex-col md:flex-row h-full">
+                    {/* Image — left on md+, top on mobile */}
+                    <div className="md:w-2/5 w-full h-44 md:h-auto overflow-hidden md:rounded-l-xl rounded-t-xl flex-shrink-0">
+                      <img
+                        src={goal.image}
                         alt={goal.name}
                         className="w-full h-full object-cover object-center"
+                        loading="lazy"
                       />
                     </div>
-                    
-                    {/* Right side - Text Content */}
-                    <div className="w-3/5 p-4 flex flex-col justify-between">
+
+                    {/* Text content */}
+                    <div className="md:w-3/5 w-full p-5 flex flex-col justify-between md:rounded-r-xl rounded-b-xl">
                       <div>
-                        <h3 className="text-base font-semibold text-gray-900 mb-1">{goal.name}</h3>
-                        <p className="text-xs text-gray-600 mb-2 leading-relaxed">
-                          {goal.desc.split('.')[0]}.
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="p-2 bg-purple-50 rounded-md inline-flex items-center justify-center">
+                            {IconComponent ? <IconComponent className="w-5 h-5 text-purple-600" /> : null}
+                          </div>
+                          <h3 className="text-base font-semibold text-gray-900">{goal.name}</h3>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-3 leading-relaxed">
+                          {goal.desc}
                         </p>
                       </div>
-                      
-                      <div>
-                        <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                      <div className="mt-3">
+                        <div className="flex items-center gap-3 text-xs text-gray-500 mb-3">
                           <span className="font-semibold text-teal-600">{goal.amount}</span>
-                          <span>•</span>
+                          <span className="text-xs">•</span>
                           <span>{goal.duration}</span>
                         </div>
-                        
-                        <Button className="w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-1.5 rounded-lg hover:shadow-md transition-all duration-300 text-xs">
+                        <Button
+                          onClick={(e) => { e.stopPropagation(); handleStartGoal(); }}
+                          className="w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 rounded-lg hover:shadow-md transition-all duration-300 text-sm"
+                          aria-label={`Start ${goal.name}`}
+                        >
                           Start Goal →
                         </Button>
                       </div>
                     </div>
                   </div>
-                </div>
+                </article>
               );
             })}
           </div>
@@ -362,7 +436,11 @@ export const GoalSimulationPage: React.FC = () => {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder={goalSearchQuery.length === 0 ? typedGoalText : t.goalSearchPlaceholder}
+                placeholder={
+                  goalSearchQuery
+                    ? t.goalSearchPlaceholder
+                    : typedGoalText || goalPlaceholderPhrases[goalPlaceholderIdx]
+                }
                 value={goalSearchQuery}
                 onChange={(e) => setGoalSearchQuery(e.target.value)}
                 onFocus={() => setShowGoalSuggestions(true)}
@@ -371,7 +449,6 @@ export const GoalSimulationPage: React.FC = () => {
               />
             </div>
             
-            {/* Live Goal Suggestions Dropdown */}
             {showGoalSuggestions && getSuggestions(goalSearchQuery).length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl overflow-hidden z-20 shadow-xl animate-fadeIn">
                 {getSuggestions(goalSearchQuery).map((suggestion, index) => (
