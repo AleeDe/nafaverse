@@ -78,10 +78,10 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-[#1E1B4B]/90 via-[#0F0A2E]/90 to-[#312E81]/90 backdrop-blur-md border-b border-[#A786DF]/20 animate-fadeInUp">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-14 sm:h-16">
             {/* Logo */}
             <div className="flex items-center space-x-2 hover-target hover-lift">
-              <NafaVerseLogo className="h-8 w-8 animate-pulse-custom" />
+              <NafaVerseLogo className="h-6 w-6 sm:h-8 sm:w-8 animate-pulse-custom" />
               <span className="text-lg sm:text-xl font-bold text-white">NafaVerse</span>
             </div>
 
