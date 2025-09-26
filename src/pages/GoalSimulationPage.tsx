@@ -360,7 +360,7 @@ export const GoalSimulationPage: React.FC = () => {
           </h2>
 
           {/* Compact Professional Goals Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12 max-w-3xl mx-auto">
             {t.goals.map((goal, index) => {
               const IconComponent = goal.icon;
 
@@ -399,11 +399,11 @@ export const GoalSimulationPage: React.FC = () => {
                   onKeyDown={(e) => { if (e.key === 'Enter') handleStartGoal(); }}
                   onClick={handleStartGoal}
                   tabIndex={0}
-                  className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer transform hover:scale-[1.02] overflow-hidden border border-gray-200/50 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer transform hover:scale-[1.02] overflow-hidden border border-gray-200/50 focus:outline-none focus:ring-2 focus:ring-purple-400 h-[200px]"
                 >
-                  <div className="flex flex-col md:flex-row h-full">
+                  <div className="flex flex-col md:flex-row h-full min-h-[200px]">
                     {/* Image — left on md+, top on mobile */}
-                    <div className="md:w-2/5 w-full h-36 md:h-auto overflow-hidden md:rounded-l-xl rounded-t-xl flex-shrink-0">
+                    <div className="md:w-2/5 w-full h-24 md:h-full overflow-hidden md:rounded-l-xl rounded-t-xl flex-shrink-0">
                       <img
                         src={goal.image}
                         alt={goal.name}
@@ -413,20 +413,20 @@ export const GoalSimulationPage: React.FC = () => {
                     </div>
 
                     {/* Text content */}
-                    <div className="md:w-3/5 w-full p-4 flex flex-col justify-between md:rounded-r-xl rounded-b-xl">
+                    <div className="md:w-3/5 w-full p-3 flex flex-col justify-between md:rounded-r-xl rounded-b-xl">
                       <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="p-1.5 bg-purple-50 rounded-md inline-flex items-center justify-center">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="p-1 bg-purple-50 rounded-md inline-flex items-center justify-center">
                             {IconComponent ? <IconComponent className="w-4 h-4 text-purple-600" /> : null}
                           </div>
-                          <h3 className="text-sm font-semibold text-gray-900">{goal.name}</h3>
+                          <h3 className="text-xs font-semibold text-gray-900 truncate">{goal.name}</h3>
                         </div>
-                        <p className="text-xs text-gray-600 mb-2 leading-relaxed">
+                        <p className="text-xs text-gray-600 mb-1 leading-tight line-clamp-2">
                           {goal.desc}
                         </p>
                       </div>
-                      <div className="mt-2">
-                        <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                      <div className="mt-1">
+                        <div className="flex items-center gap-2 text-xs text-gray-500 mb-1">
                           <span className="font-semibold text-teal-600">{goal.amount}</span>
                           <span className="text-xs">•</span>
                           <span>{goal.duration}</span>
@@ -434,7 +434,7 @@ export const GoalSimulationPage: React.FC = () => {
                         <Button
                           onClick={(e) => { e.stopPropagation(); handleStartGoal(); }}
                           variant="glow"
-                          className="w-full font-medium py-1.5 text-xs hover-target hover-lift"
+                          className="w-full font-medium py-1 text-xs hover-target hover-lift"
                           aria-label={`Start ${goal.name}`}
                         >
                           Start Goal →
