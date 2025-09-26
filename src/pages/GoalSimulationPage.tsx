@@ -248,9 +248,7 @@ export const GoalSimulationPage: React.FC = () => {
   }, [goalSearchQuery, goalPlaceholderIdx, goalPlaceholderPhrases]);
 
   const handleInputChange = (field: string, value: number) => {
-    // Remove leading zeros and handle empty/invalid inputs
-    const cleanValue = isNaN(value) || value < 0 ? 0 : value;
-    setSimulationInputs(prev => ({ ...prev, [field]: cleanValue }));
+    setSimulationInputs(prev => ({ ...prev, [field]: value }));
   };
 
   const calculateSimulation = () => {
@@ -547,10 +545,8 @@ export const GoalSimulationPage: React.FC = () => {
                   type="number"
                   value={simulationInputs.roi}
                   onChange={(e) => {
-                    const value = Number(e.target.value);
-                    if (!isNaN(value) && value >= 0) {
-                      handleInputChange('roi', value);
-                    }
+                    const value = e.target.value === '' ? 0 : Number(e.target.value);
+                    handleInputChange('roi', value);
                   }}
                   className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
                   min="0"
@@ -579,10 +575,8 @@ export const GoalSimulationPage: React.FC = () => {
                   type="number"
                   value={simulationInputs.time}
                   onChange={(e) => {
-                    const value = Number(e.target.value);
-                    if (!isNaN(value) && value >= 0) {
-                      handleInputChange('time', value);
-                    }
+                    const value = e.target.value === '' ? 0 : Number(e.target.value);
+                    handleInputChange('time', value);
                   }}
                   className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
                   min="0"
@@ -611,10 +605,8 @@ export const GoalSimulationPage: React.FC = () => {
                   type="number"
                   value={simulationInputs.initialAmount}
                   onChange={(e) => {
-                    const value = Number(e.target.value);
-                    if (!isNaN(value) && value >= 0) {
-                      handleInputChange('initialAmount', value);
-                    }
+                    const value = e.target.value === '' ? 0 : Number(e.target.value);
+                    handleInputChange('initialAmount', value);
                   }}
                   className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
                   min="0"
@@ -644,10 +636,8 @@ export const GoalSimulationPage: React.FC = () => {
                   name="targetAmount"
                   value={simulationInputs.targetAmount}
                   onChange={(e) => {
-                    const value = Number(e.target.value);
-                    if (!isNaN(value) && value >= 0) {
-                      handleInputChange('targetAmount', value);
-                    }
+                    const value = e.target.value === '' ? 0 : Number(e.target.value);
+                    handleInputChange('targetAmount', value);
                   }}
                   className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
                   min="0"
