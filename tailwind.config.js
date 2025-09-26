@@ -4,15 +4,13 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Poppins', 'ui-sans-serif', 'system-ui', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'],
-        display: ['Space Grotesk', 'Poppins', 'ui-sans-serif']
+        sans: ['var(--font-sans)'],
+        mono: ['var(--font-mono)']
       },
       fontWeight: {
-        'light': '300',
-        'normal': '400',
-        'medium': '500',
-        'semibold': '600',
-        'bold': '700'
+        'normal': 'var(--font-weight-normal)',
+        'medium': 'var(--font-weight-medium)',
+        'semibold': 'var(--font-weight-semibold)'
       },
       colors: {
         nv: {
