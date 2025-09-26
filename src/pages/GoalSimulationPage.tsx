@@ -362,7 +362,7 @@ export const GoalSimulationPage: React.FC = () => {
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                placeholder={goalSearchQuery.length === 0 ? t.placeholders[currentGoalPlaceholder] : t.goalSearchPlaceholder}
+                placeholder={goalSearchQuery.length === 0 ? typedGoalText : t.goalSearchPlaceholder}
                 value={goalSearchQuery}
                 onChange={(e) => setGoalSearchQuery(e.target.value)}
                 onFocus={() => setShowGoalSuggestions(true)}
