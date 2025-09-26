@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Search, Target, TrendingUp, Calculator, Plus, Minus, MapPin, GraduationCap, Home, Building2 } from 'lucide-react';
+import { Search, Target, TrendingUp, Calculator, Plus, Minus, MapPin, GraduationCap, Home, Building2, User } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { Button } from '../components/ui/button';
 import { useDashboard } from '../components/DashboardContext';
