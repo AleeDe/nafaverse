@@ -248,7 +248,9 @@ export const GoalSimulationPage: React.FC = () => {
   }, [goalSearchQuery, goalPlaceholderIdx, goalPlaceholderPhrases]);
 
   const handleInputChange = (field: string, value: number) => {
-    setSimulationInputs(prev => ({ ...prev, [field]: value }));
+    // Remove leading zeros and handle empty/invalid inputs
+    const cleanValue = isNaN(value) || value < 0 ? 0 : value;
+    setSimulationInputs(prev => ({ ...prev, [field]: cleanValue }));
   };
 
   const calculateSimulation = () => {
@@ -544,8 +546,16 @@ export const GoalSimulationPage: React.FC = () => {
                 <input
                   type="number"
                   value={simulationInputs.roi}
-                  onChange={(e) => handleInputChange('roi', Number(e.target.value))}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Allow empty input or valid numbers without leading zeros
+                    if (value === '' || (!isNaN(Number(value)) && !value.startsWith('0') && value !== '0')) {
+                      handleInputChange('roi', value === '' ? 0 : Number(value));
+                    }
+                  }}
                   className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
+                  min="0"
+                  step="1"
                 />
                 <button
                   onClick={() => handleInputChange('roi', simulationInputs.roi + 1)}
@@ -569,8 +579,15 @@ export const GoalSimulationPage: React.FC = () => {
                 <input
                   type="number"
                   value={simulationInputs.time}
-                  onChange={(e) => handleInputChange('time', Number(e.target.value))}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '' || (!isNaN(Number(value)) && !value.startsWith('0') && value !== '0')) {
+                      handleInputChange('time', value === '' ? 0 : Number(value));
+                    }
+                  }}
                   className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
+                  min="0"
+                  step="1"
                 />
                 <button
                   onClick={() => handleInputChange('time', simulationInputs.time + 1)}
@@ -594,8 +611,15 @@ export const GoalSimulationPage: React.FC = () => {
                 <input
                   type="number"
                   value={simulationInputs.initialAmount}
-                  onChange={(e) => handleInputChange('initialAmount', Number(e.target.value))}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '' || (!isNaN(Number(value)) && !value.startsWith('0') && value !== '0')) {
+                      handleInputChange('initialAmount', value === '' ? 0 : Number(value));
+                    }
+                  }}
                   className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
+                  min="0"
+                  step="1000"
                 />
                 <button
                   onClick={() => handleInputChange('initialAmount', simulationInputs.initialAmount + 10000)}
@@ -618,9 +642,17 @@ export const GoalSimulationPage: React.FC = () => {
                 </button>
                 <input
                   type="number"
+                  name="targetAmount"
                   value={simulationInputs.targetAmount}
-                  onChange={(e) => handleInputChange('targetAmount', Number(e.target.value))}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '' || (!isNaN(Number(value)) && !value.startsWith('0') && value !== '0')) {
+                      handleInputChange('targetAmount', value === '' ? 0 : Number(value));
+                    }
+                  }}
                   className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
+                  min="0"
+                  step="1000"
                 />
                 <button
                   onClick={() => handleInputChange('targetAmount', simulationInputs.targetAmount + 50000)}
