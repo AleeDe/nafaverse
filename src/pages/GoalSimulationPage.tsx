@@ -431,7 +431,7 @@ export const GoalSimulationPage: React.FC = () => {
           </div>
 
           {/* Goal Search with Live Typing */}
-          <div className="max-w-2xl mx-auto relative z-10">
+          <div className="max-w-2xl mx-auto relative z-50">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
@@ -450,7 +450,7 @@ export const GoalSimulationPage: React.FC = () => {
             </div>
             
             {showGoalSuggestions && getSuggestions(goalSearchQuery).length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl overflow-hidden z-20 shadow-xl animate-fadeIn">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl overflow-hidden z-[100] shadow-xl animate-fadeIn">
                 {getSuggestions(goalSearchQuery).map((suggestion, index) => (
                   <div
                     key={index}
