@@ -547,10 +547,9 @@ export const GoalSimulationPage: React.FC = () => {
                   type="number"
                   value={simulationInputs.roi}
                   onChange={(e) => {
-                    const value = e.target.value;
-                    // Allow empty input or valid numbers without leading zeros
-                    if (value === '' || (!isNaN(Number(value)) && !value.startsWith('0') && value !== '0')) {
-                      handleInputChange('roi', value === '' ? 0 : Number(value));
+                    const value = Number(e.target.value);
+                    if (!isNaN(value) && value >= 0) {
+                      handleInputChange('roi', value);
                     }
                   }}
                   className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
@@ -580,9 +579,9 @@ export const GoalSimulationPage: React.FC = () => {
                   type="number"
                   value={simulationInputs.time}
                   onChange={(e) => {
-                    const value = e.target.value;
-                    if (value === '' || (!isNaN(Number(value)) && !value.startsWith('0') && value !== '0')) {
-                      handleInputChange('time', value === '' ? 0 : Number(value));
+                    const value = Number(e.target.value);
+                    if (!isNaN(value) && value >= 0) {
+                      handleInputChange('time', value);
                     }
                   }}
                   className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
@@ -612,9 +611,9 @@ export const GoalSimulationPage: React.FC = () => {
                   type="number"
                   value={simulationInputs.initialAmount}
                   onChange={(e) => {
-                    const value = e.target.value;
-                    if (value === '' || (!isNaN(Number(value)) && !value.startsWith('0') && value !== '0')) {
-                      handleInputChange('initialAmount', value === '' ? 0 : Number(value));
+                    const value = Number(e.target.value);
+                    if (!isNaN(value) && value >= 0) {
+                      handleInputChange('initialAmount', value);
                     }
                   }}
                   className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
@@ -645,9 +644,9 @@ export const GoalSimulationPage: React.FC = () => {
                   name="targetAmount"
                   value={simulationInputs.targetAmount}
                   onChange={(e) => {
-                    const value = e.target.value;
-                    if (value === '' || (!isNaN(Number(value)) && !value.startsWith('0') && value !== '0')) {
-                      handleInputChange('targetAmount', value === '' ? 0 : Number(value));
+                    const value = Number(e.target.value);
+                    if (!isNaN(value) && value >= 0) {
+                      handleInputChange('targetAmount', value);
                     }
                   }}
                   className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
