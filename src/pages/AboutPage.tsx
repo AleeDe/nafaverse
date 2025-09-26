@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { About } from '../components/About';
 import { SkeletonLoader } from '../components/SkeletonLoader';
-import { ArrowUp } from 'lucide-react';
 import { useDashboard } from '../components/DashboardContext';
 
 const teamMembers = [
@@ -32,10 +31,6 @@ const teamMembers = [
 	}
 ];
 
-const scrollToTop = () => {
-	window.scrollTo({ top: 0, behavior: 'smooth' });
-};
-
 export function AboutPage() {
 	const { currentLanguage } = useDashboard();
 	const [loading, setLoading] = useState(true);
@@ -52,15 +47,6 @@ export function AboutPage() {
 	}
 
 	return (
-		<>
-			<About currentLanguage={currentLanguage} teamMembers={teamMembers} />
-
-			<button
-				onClick={scrollToTop}
-				className="fixed bottom-8 right-8 bg-gradient-to-r from-purple-600 to-blue-600 text-white p-3 rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300 z-40"
-			>
-				<ArrowUp className="w-5 h-5" />
-			</button>
-		</>
+		<About currentLanguage={currentLanguage} teamMembers={teamMembers} />
 	);
 }
