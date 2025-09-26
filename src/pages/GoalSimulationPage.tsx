@@ -450,7 +450,7 @@ export const GoalSimulationPage: React.FC = () => {
             </div>
             
             {showGoalSuggestions && getSuggestions(goalSearchQuery).length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl overflow-hidden z-[100] shadow-xl animate-fadeIn">
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl overflow-hidden z-[100] shadow-xl animate-fadeIn z-10">
                 {getSuggestions(goalSearchQuery).map((suggestion, index) => (
                   <div
                     key={index}
