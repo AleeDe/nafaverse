@@ -3,6 +3,7 @@ import { Search, Target, TrendingUp, Calculator, Plus, Minus, MapPin, Graduation
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { Button } from '../components/ui/button';
 import { useDashboard } from '../components/DashboardContext';
+import { DashboardSheet } from '../components/DashboardSheet';
 
 // Typewriter hook with cleanup
 function useTypewriter(
@@ -58,7 +59,7 @@ function useTypewriter(
 }
 
 export const GoalSimulationPage: React.FC = () => {
-  const { currentLanguage } = useDashboard();
+  const { currentLanguage, dashboardOpen, setDashboardOpen } = useDashboard();
   const [searchQuery, setSearchQuery] = useState('');
   const [goalSearchQuery, setGoalSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -287,6 +288,21 @@ export const GoalSimulationPage: React.FC = () => {
   };
 
   return (
+    <>
+      {/* Dashboard Toggle Icon - Top Left */}
+      {!dashboardOpen && (
+        <div className="fixed top-[80px] left-[30px] z-[1100]">
+          <button
+            onClick={() => setDashboardOpen(true)}
+            className="bg-gradient-to-br from-purple-400 to-blue-500 text-white w-12 h-11 flex items-center justify-center rounded-xl shadow-lg hover:shadow-blue-500/30 transition-shadow"
+            aria-label="Open Dashboard"
+          >
+            <User className="w-6 h-6" />
+          </button>
+        </div>
+      )}
+      <DashboardSheet />
+      
     <div className="min-h-screen pt-16 relative overflow-hidden">
       {/* Frame 1: Hero Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 relative z-10 bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81]">
@@ -722,5 +738,6 @@ export const GoalSimulationPage: React.FC = () => {
         </section>
       )}
     </div>
+    </>
   );
 };
