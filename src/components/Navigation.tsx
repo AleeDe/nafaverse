@@ -172,11 +172,16 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
               {/* Mobile Menu */}
               <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm" className="md:hidden text-white hover-target hover-lift">
+                  <Button variant="ghost" size="sm" className="sm:hidden text-white hover-target hover-lift">
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-80 bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81] border-[rgba(167,134,223,0.3)] p-0">
+                <SheetContent side="right" className="w-80 bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81] border-[rgba(167,134,223,0.3)] p-0 animate-slideInRight">
+                  <div className="absolute inset-0 opacity-15">
+                    <div className="absolute top-20 left-10 w-32 h-32 bg-[#8B5CF6] rounded-full blur-xl"></div>
+                    <div className="absolute bottom-20 right-10 w-48 h-48 bg-[#F59E0B] rounded-full blur-xl"></div>
+                    <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-[#8B5CF6]/50 rounded-full blur-2xl transform -translate-x-1/2 -translate-y-1/2"></div>
+                  </div>
                   <div className="flex flex-col h-full">
                     <SheetHeader className="p-6 border-b border-white/10 bg-[#1E1B4B]/90 backdrop-blur-sm">
                       <SheetTitle className="text-white text-xl font-bold flex items-center gap-2">
