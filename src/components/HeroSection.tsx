@@ -18,8 +18,8 @@ export const HeroSection = () => {
 
   const content = {
     en: {
-      welcome: 'Welcome to NAFAVERSE',
-      headline: 'Master Finance with AI-Powered Learning',
+      welcome: 'Financial Mastery',
+      headline: 'Welcome to NAFAVERSE',
       subtitle: "Pakistan's first AI-powered financial literacy platform blending Islamic finance with cutting‑edge tech.",
       primaryCTA: 'Get Started',
       secondaryCTA: 'Still thinking? Start now.',
@@ -32,8 +32,8 @@ export const HeroSection = () => {
       ]
     },
     ur: {
-      welcome: 'NAFAVERSE mein Khush Aamdeed',
-      headline: 'AI ke saath Finance seekhiye aur Master baniye',
+      welcome: 'Financial Mastery',
+      headline: 'NAFAVERSE mein Khush Aamdeed',
       subtitle: 'Pakistan ka pehla AI‑powered financial literacy platform jo Islamic finance ko cutting‑edge technology ke saath milata hai.',
       primaryCTA: 'Shuru Kariye',
       secondaryCTA: 'Abhi bhi soch rahe hain? Abhi shuru kariye',
