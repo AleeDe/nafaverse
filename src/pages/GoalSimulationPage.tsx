@@ -417,7 +417,8 @@ export const GoalSimulationPage: React.FC = () => {
                         </div>
                         <Button
                           onClick={(e) => { e.stopPropagation(); handleStartGoal(); }}
-                          className="w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 rounded-lg hover:shadow-md transition-all duration-300 text-sm"
+                          variant="glow"
+                          className="w-full font-medium py-2 text-sm hover-target hover-lift"
                           aria-label={`Start ${goal.name}`}
                         >
                           Start Goal →
