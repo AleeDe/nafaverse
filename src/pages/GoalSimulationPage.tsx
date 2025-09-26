@@ -320,13 +320,42 @@ export const GoalSimulationPage: React.FC = () => {
           
             {/* Live typing display only (no input/dropdown) */}
             <div className="relative max-w-2xl mx-auto mb-12">
-            <div
-              aria-live="polite"
-              className="w-full px-6 py-4 rounded-2xl bg-white/10 border border-white/20 text-white text-lg backdrop-blur-sm"
-            >
-              {typedMain || heroPhrases[0]}
-              <span className="ml-1 opacity-80 animate-pulse">|</span>
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
+              <input
+                type="text"
+                placeholder={
+                  searchQuery
+                    ? t.searchPlaceholder
+                    : typedMain || heroPhrases[0]
+                }
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/10 border border-white/20 text-white text-lg placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 backdrop-blur-sm transition-all duration-300"
+              />
             </div>
+            
+            {showSuggestions && getSuggestions(searchQuery).length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl overflow-hidden z-[100] shadow-xl animate-fadeIn">
+                {getSuggestions(searchQuery).map((suggestion, index) => (
+                  <div
+                    key={index}
+                    className="px-4 py-3 text-gray-900 hover:bg-purple-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0 flex items-center gap-3"
+                    onClick={() => {
+                      setSearchQuery(suggestion);
+                      setShowSuggestions(false);
+                      // Auto-scroll to goals section when suggestion is selected
+                      scrollToSection(goalsRef);
+                    }}
+                  >
+                    <Search className="w-4 h-4 text-gray-400" />
+                    <span>{suggestion}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             </div>
 
           {/* Action Buttons */}
