@@ -268,18 +268,24 @@ body {
     margin: 0.5rem;
   }
   
-  /* Reduce font weights on mobile */
-  h1, h2, h3, h4, h5, h6 {
-    font-weight: 500 !important;
-  }
-  
-  .font-bold {
-    font-weight: 600 !important;
-  }
-  
-  .font-semibold {
-    font-weight: 500 !important;
-  }
+}
+
+/* Global font weight adjustments for professional look */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 500 !important; /* Medium weight for all headings */
+}
+
+.font-bold {
+  font-weight: 600 !important; /* Semibold instead of bold */
+}
+
+.font-semibold {
+  font-weight: 500 !important; /* Medium instead of semibold */
+}
+
+/* Specific adjustments for hero titles */
+.font-display {
+  font-weight: 500 !important; /* Clean medium weight */
 }
 
 /* Smooth scrolling */
