@@ -12,6 +12,10 @@ export const GoalSimulationPage: React.FC = () => {
   const [showGoalSuggestions, setShowGoalSuggestions] = useState(false);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [currentGoalPlaceholder, setCurrentGoalPlaceholder] = useState(0);
+  const [typedText, setTypedText] = useState('');
+  const [isTyping, setIsTyping] = useState(true);
+  const [typedGoalText, setTypedGoalText] = useState('');
+  const [isGoalTyping, setIsGoalTyping] = useState(true);
   const [simulationInputs, setSimulationInputs] = useState({
     roi: 12,
     time: 5,
@@ -141,22 +145,52 @@ export const GoalSimulationPage: React.FC = () => {
   // Live typing effect for main search
   useEffect(() => {
     if (searchQuery.length === 0) {
-      const interval = setInterval(() => {
-        setCurrentPlaceholder((prev) => (prev + 1) % t.placeholders.length);
-      }, 2000);
-      return () => clearInterval(interval);
+      const currentText = t.placeholders[currentPlaceholder];
+      let charIndex = 0;
+      
+      const typeText = () => {
+        if (charIndex < currentText.length) {
+          setTypedText(currentText.slice(0, charIndex + 1));
+          charIndex++;
+          setTimeout(typeText, 100); // Type each character every 100ms
+        } else {
+          // Wait 2 seconds then move to next placeholder
+          setTimeout(() => {
+            setCurrentPlaceholder((prev) => (prev + 1) % t.placeholders.length);
+            setTypedText('');
+            charIndex = 0;
+          }, 2000);
+        }
+      };
+      
+      typeText();
     }
-  }, [searchQuery, t.placeholders.length]);
+  }, [searchQuery, currentPlaceholder, t.placeholders]);
 
   // Live typing effect for goal search
   useEffect(() => {
     if (goalSearchQuery.length === 0) {
-      const interval = setInterval(() => {
-        setCurrentGoalPlaceholder((prev) => (prev + 1) % t.placeholders.length);
-      }, 2000);
-      return () => clearInterval(interval);
+      const currentText = t.placeholders[currentGoalPlaceholder];
+      let charIndex = 0;
+      
+      const typeText = () => {
+        if (charIndex < currentText.length) {
+          setTypedGoalText(currentText.slice(0, charIndex + 1));
+          charIndex++;
+          setTimeout(typeText, 100); // Type each character every 100ms
+        } else {
+          // Wait 2 seconds then move to next placeholder
+          setTimeout(() => {
+            setCurrentGoalPlaceholder((prev) => (prev + 1) % t.placeholders.length);
+            setTypedGoalText('');
+            charIndex = 0;
+          }, 2000);
+        }
+      };
+      
+      typeText();
     }
-  }, [goalSearchQuery, t.placeholders.length]);
+  }, [goalSearchQuery, currentGoalPlaceholder, t.placeholders]);
 
   const handleInputChange = (field: string, value: number) => {
     setSimulationInputs(prev => ({ ...prev, [field]: value }));
