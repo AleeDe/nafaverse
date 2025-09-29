@@ -4,6 +4,7 @@ class ApiService {
   constructor() {
     this.api = axios.create({
       baseURL: 'https://nafaversebackend.onrender.com/api/',
+      // baseURL: 'http://localhost:8080/api/',
       timeout: 10000,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -16,6 +17,22 @@ class ApiService {
       }
       return config;
     });
+
+    // Handle 401 globally
+    this.api.interceptors.response.use(
+      (res) => res,
+      (error) => {
+        if (error?.response?.status === 401) {
+          // clear only localStorage
+          localStorage.removeItem('token');
+          localStorage.removeItem('userId');
+          localStorage.removeItem('username');
+          localStorage.removeItem('email');
+          window.dispatchEvent(new Event('nafa-auth-unauthorized'));
+        }
+        return Promise.reject(error);
+      }
+    );
   }
 
   async signup(userDetails) {
@@ -26,23 +43,33 @@ class ApiService {
   async login(credentials) {
     const res = await this.api.post('auth/login', credentials);
     if (res.data?.token) {
-      const maxAge = 60 * 60 * 24 * 7;
       localStorage.setItem('token', res.data.token);
-      document.cookie = `token=${res.data.token}; path=/; max-age=${maxAge}`;
-      if (res.data.username) document.cookie = `username=${encodeURIComponent(res.data.username)}; path=/; max-age=${maxAge}`;
-      if (res.data.email) document.cookie = `email=${encodeURIComponent(res.data.email)}; path=/; max-age=${maxAge}`;
+      if (res.data.id || res.data.userId) {
+        localStorage.setItem('userId', String(res.data.id ?? res.data.userId));
+      }
+      if (res.data.username) localStorage.setItem('username', String(res.data.username));
+      if (res.data.email) localStorage.setItem('email', String(res.data.email));
     }
     return res.data;
   }
 
   // NEW: fetch current user using token
   async getMe() {
-    const res = await this.api.get('auth/me'); // backend should return { username, email }
+    const res = await this.api.get('auth/me'); // backend should return { id?, username?, email? }
+    // Optional: persist if backend returns details
+    if (res.data) {
+      if (res.data.id || res.data.userId) {
+        localStorage.setItem('userId', String(res.data.id ?? res.data.userId));
+      }
+      if (res.data.username) localStorage.setItem('username', String(res.data.username));
+      if (res.data.email) localStorage.setItem('email', String(res.data.email));
+    }
     return res.data;
   }
 
   googleLogin() {
-    window.location.href = 'https://nafaversebackend.onrender.com/api/google/login';
+    // Spring Security’s OAuth2 entrypoint
+    window.location.href = 'https://nafaversebackend.onrender.com/oauth2/authorization/google';
   }
 
   async requestPasswordReset(email) {
@@ -52,6 +79,20 @@ class ApiService {
 
   async resetPassword(token, newPassword) {
     const res = await this.api.post('password/reset', null, { params: { token, newPassword } });
+    return res.data;
+  }
+
+  // GOALS: POST /api/goals/create
+  async createGoalPlan(payload) {
+    // payload: { goalName, city, targetYear, prompt }
+    const res = await this.api.post('goals/create', payload);
+    return res.data;
+  }
+
+  // SIMULATIONS: POST /api/simulations/create
+  async createSimulationPlan(payload) {
+    // payload: { city, durationYears, oneTimeInvestment, monthlyInvestment, roiRate, inflationRate, prompt }
+    const res = await this.api.post('simulations/create', payload);
     return res.data;
   }
 }
@@ -66,43 +107,46 @@ function decodeJwt(token) {
   }
 }
 
-// Handle Google OAuth callback robustly
+// Handle Google OAuth callback: save ONLY to localStorage
 export async function handleGoogleOAuthCallback() {
-  const { pathname, search } = window.location;
+  const { pathname, search, hash } = window.location;
 
-  // Do not run on password pages
-  if (pathname === '/reset-password' || pathname === '/forgot-password') return false;
+  // Accept these callback paths
+  const allowed = new Set(['/', '/auth/callback', '/oauth/callback']);
+  if (!allowed.has(pathname)) return false;
 
-  // Only handle on these paths
-  const allowed = ['/', '/auth/callback', '/oauth/callback'];
-  if (!allowed.includes(pathname)) return false;
+  const qs = new URLSearchParams(search || '');
+  const hs = new URLSearchParams((hash || '').replace(/^#/, ''));
+  const get = (k) => qs.get(k) || hs.get(k);
 
-  const params = new URLSearchParams(search);
-  const token = params.get('token');
+  const token = get('token');
   if (!token) return false;
 
-  const maxAge = 60 * 60 * 24 * 7;
+  // Save token so interceptor adds Authorization
   localStorage.setItem('token', token);
-  document.cookie = `token=${token}; path=/; max-age=${maxAge}`;
 
-  // Try URL user info
-  const urlUsername = params.get('username');
-  const urlEmail = params.get('email');
-  if (urlUsername) document.cookie = `username=${encodeURIComponent(urlUsername)}; path=/; max-age=${maxAge}`;
-  if (urlEmail) document.cookie = `email=${encodeURIComponent(urlEmail)}; path=/; max-age=${maxAge}`;
+  // Optional extras from URL
+  const id = get('id') || get('userId');
+  const name = get('name') || get('username');
+  const email = get('email');
+  if (id) localStorage.setItem('userId', String(id));
+  if (name) localStorage.setItem('username', String(name));
+  if (email) localStorage.setItem('email', String(email));
 
-  // Fallback: decode JWT
-  if (!urlUsername && !urlEmail) {
-    const payload = decodeJwt(token);
-    const nameFromJwt = payload?.username || payload?.name || payload?.preferred_username;
-    const emailFromJwt = payload?.email;
-    if (nameFromJwt) document.cookie = `username=${encodeURIComponent(nameFromJwt)}; path=/; max-age=${maxAge}`;
-    if (emailFromJwt) document.cookie = `email=${encodeURIComponent(emailFromJwt)}; path=/; max-age=${maxAge}`;
+  // Verify with backend (fills missing fields)
+  try {
+    const me = await apiService.getMe();
+    if (me) {
+      if (me.id || me.userId) localStorage.setItem('userId', String(me.id ?? me.userId));
+      if (me.username) localStorage.setItem('username', String(me.username));
+      if (me.email) localStorage.setItem('email', String(me.email));
+    }
+  } catch {
+    // ignore network/server errors; local data still set
   }
 
-  // Clean URL and notify app
-  window.history.replaceState({}, document.title, '/');
-  window.dispatchEvent(new Event('nafa-auth-updated'));
+  // Hard redirect so the SPA mounts Home cleanly
+  window.location.replace('/'); // instead of history.replaceState
   return true;
 }
 

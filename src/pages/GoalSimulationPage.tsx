@@ -4,6 +4,7 @@ import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'rec
 import { Button } from '../components/ui/button';
 import { useDashboard } from '../components/DashboardContext';
 import { DashboardSheet } from '../components/DashboardSheet';
+import { apiService } from '../api/apiService'; // add
 
 // Types for API normalization
 type GraphPoint = { year: number; projectedValue: number };
@@ -123,7 +124,6 @@ export const GoalSimulationPage: React.FC = () => {
     roi: 12,                // roiRate
     time: 5,                // durationYears
     initialAmount: 100000,  // oneTimeInvestment
-    targetAmount: 500000,   // (not used by API; kept for backward compatibility in UI)
     monthlyInvestment: 20000,
     inflationRate: 6,
     city: 'Karachi'
@@ -178,8 +178,12 @@ export const GoalSimulationPage: React.FC = () => {
 
   // Small helpers
   const base = (import.meta as any)?.env?.VITE_API_BASE_URL || '';
-  const GOAL_API = `${base}/api/goal-plan`;        // plug your real endpoint
-  const SIM_API = `${base}/api/simulate-plan`;     // plug your real endpoint
+  const GOAL_API = `${base}/api/goals/create`;        // plug your real endpoint
+  const SIM_API = `${base}/api/simulations/create`;     // plug your real endpoint
+  const GOAL_FIXED_PROMPT =
+    'Use PKR as currency. Round amounts to the nearest thousand. Prefer conservative estimates.';
+  const SIM_FIXED_PROMPT =
+    'Use PKR. Start from the current year. Output strictly valid JSON.';
 
   // Normalize API responses to one shape the UI understands
   const unifyFromGoalApi = (data: ApiGoalResult): UnifiedResult => {
@@ -297,55 +301,67 @@ export const GoalSimulationPage: React.FC = () => {
 
   const handlePlannerSubmit = async () => {
     if (!selectedGoalName) return;
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      pushToast({ variant: 'error', title: 'Login required', description: 'Please sign in first.' });
+      return;
+    }
+
     setPlannerLoading(true);
     setPlannerError(null);
     setAiMessage('Crafting your goal plan with AI… Thanks for your patience!');
     setAiLoading(true);
 
     try {
+      // Build goalName as requested (Umrah/Hajj are explicit)
+      const computedGoalName = (() => {
+        const base = (selectedGoalName || '').toLowerCase();
+        if (base.includes('umrah') || base.includes('hajj')) {
+          const pick = plannerSubType || 'Umrah';
+          return `Perform ${pick}`;
+        }
+        return selectedGoalName || '';
+      })();
+
+      // ONLY these fields go to backend
       const payload = {
-        goalName: selectedGoalName,
+        goalName: computedGoalName, // e.g., "Perform Umrah" or "Perform Hajj"
         city: plannerCity,
         targetYear: plannerYear,
-        language: currentLanguage,
-        subGoalType: isPilgrimage ? plannerSubType : undefined
+        prompt: GOAL_FIXED_PROMPT,
       };
 
-      // Update simulation "time" based on target year
+      // Sync duration with target year (UI only)
       const yearsUntil = Math.max(1, plannerYear - currentYear);
       setSimulationInputs(prev => ({ ...prev, time: yearsUntil }));
 
       let data: ApiGoalResult | null = null;
-      let ok = false;
-      if (base) {
-        try {
-          const res = await fetch(GOAL_API, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          ok = res.ok;
-          if (res.ok) data = await res.json().catch(() => null);
-        } catch {
-          ok = false;
+      try {
+        data = await apiService.createGoalPlan(payload);
+      } catch (err: any) {
+        if (err?.response?.status === 401) {
+          pushToast({ variant: 'error', title: 'Session expired', description: 'Please log in again.' });
+          setPlannerOpen(false);
+          return;
         }
+        // Non-401 fallback
+        await new Promise(r => setTimeout(r, 1000));
+        data = dummyGoalResponse(computedGoalName, plannerCity, plannerYear, simulationInputs.roi, simulationInputs.inflationRate);
       }
 
-      if (!ok || !data) {
-        // Simulate latency and fallback
-        await new Promise(r => setTimeout(r, 1400));
-        data = dummyGoalResponse(selectedGoalName, plannerCity, plannerYear, simulationInputs.roi, simulationInputs.inflationRate);
-      }
-
-      const unified = unifyFromGoalApi(data);
+      const unified = unifyFromGoalApi(data!);
       setSimulationResult(unified);
-      pushToast({ variant: 'success', title: 'Goal plan ready', description: `${unified.meta?.goalName || 'Goal'} for ${unified.meta?.city || 'your city'}` });
-
+      pushToast({
+        variant: 'success',
+        title: 'Goal plan ready',
+        description: `${unified.meta?.goalName || 'Goal'} • ${unified.meta?.city || ''}`
+      });
       setPlannerOpen(false);
       scrollToSection(resultRef);
     } catch (e: any) {
-      setPlannerError(e?.message || 'Something went wrong. Please try again.');
-      pushToast({ variant: 'error', title: 'Failed to generate goal plan', description: 'Please retry in a moment.' });
+      setPlannerError(e?.message || 'Something went wrong.');
+      pushToast({ variant: 'error', title: 'Failed to generate goal plan' });
     } finally {
       setPlannerLoading(false);
       setAiLoading(false);
@@ -471,50 +487,46 @@ export const GoalSimulationPage: React.FC = () => {
   // New: Simulation via API (with dummy fallback)
   const runSimulation = async () => {
     const { roi, time, initialAmount, monthlyInvestment, inflationRate, city } = simulationInputs;
+    // ONLY these fields go to backend
+    const payload = {
+      city,
+      durationYears: time,
+      oneTimeInvestment: initialAmount,
+      monthlyInvestment,
+      roiRate: roi,
+      inflationRate,
+      prompt: SIM_FIXED_PROMPT,
+    };
 
-    // UX: show AI loader
+    const token = localStorage.getItem('token');
+    if (!token) {
+      pushToast({ variant: 'error', title: 'Login required', description: 'Please sign in first.' });
+      return;
+    }
+
     setAiMessage('Running your AI simulation… This may take a few seconds.');
     setAiLoading(true);
 
     try {
-      const payload = {
-        city,
-        durationYears: time,
-        oneTimeInvestment: initialAmount,
-        monthlyInvestment,
-        roiRate: roi,
-        inflationRate,
-        prompt: 'Use PKR. Start from the current year. Output strictly valid JSON.' // note: server should handle fixed prompt; this is just a placeholder field
-      };
-
       let data: ApiSimulationResult | null = null;
-      let ok = false;
-      if (base) {
-        try {
-          const res = await fetch(SIM_API, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          ok = res.ok;
-          if (res.ok) data = await res.json().catch(() => null);
-        } catch {
-          ok = false;
+      try {
+        data = await apiService.createSimulationPlan(payload);
+      } catch (err: any) {
+        if (err?.response?.status === 401) {
+          pushToast({ variant: 'error', title: 'Session expired', description: 'Please log in again.' });
+          return;
         }
-      }
-
-      if (!ok || !data) {
-        // Simulate latency & fallback
-        await new Promise(r => setTimeout(r, 1600));
+        // Non-401 fallback
+        await new Promise(r => setTimeout(r, 1000));
         data = dummySimulationResponse(city, time, initialAmount, monthlyInvestment, roi, inflationRate);
       }
 
-      const unified = unifyFromSimulationApi(data, monthlyInvestment);
+      const unified = unifyFromSimulationApi(data!, monthlyInvestment);
       setSimulationResult(unified);
       pushToast({ variant: 'success', title: 'Simulation complete', description: `Projection for ${city} over ${time} years` });
       scrollToSection(resultRef);
-    } catch (e) {
-      pushToast({ variant: 'error', title: 'Simulation failed', description: 'Please try again shortly.' });
+    } catch {
+      pushToast({ variant: 'error', title: 'Simulation failed' });
     } finally {
       setAiLoading(false);
     }
@@ -691,7 +703,7 @@ export const GoalSimulationPage: React.FC = () => {
                     onKeyDown={(e) => { if (e.key === 'Enter') openPlanner(goal.name); }}
                     onClick={() => openPlanner(goal.name)}
                     tabIndex={0}
-                    className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer transform hover:scale-[1.02] overflow-hidden border border-gray-200/50 focus:outline-none focus:ring-2 focus:ring-purple-400 h-[200px]"
+                    className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer transform hover:scale-[1.02] overflow-hidden border border-gray-200/50 focus:outline-none focus:ring-2 focus:ring-purple-400 "
                   >
                     <div className="flex flex-col md:flex-row h-full min-h-[200px]">
                       <div className="md:w-2/5 w-full h-24 md:h-full overflow-hidden md:rounded-l-xl rounded-t-xl flex-shrink-0">
@@ -904,37 +916,6 @@ export const GoalSimulationPage: React.FC = () => {
                   />
                   <button
                     onClick={() => handleInputChange('monthlyInvestment', Number(simulationInputs.monthlyInvestment) + 1000)}
-                    className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20"
-                  >
-                    <Plus className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Optional: keep Target Amount for legacy (not used in API) */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                <label className="block text-white font-semibold mb-4 text-lg">{t.targetAmount}</label>
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={() => handleInputChange('targetAmount', Math.max(Number(simulationInputs.initialAmount), Number(simulationInputs.targetAmount) - 50000))}
-                    className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20"
-                  >
-                    <Minus className="w-5 h-5" />
-                  </button>
-                  <input
-                    type="number"
-                    name="targetAmount"
-                    value={simulationInputs.targetAmount || ''}
-                    onChange={(e) => {
-                      const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0;
-                      handleInputChange('targetAmount', value);
-                    }}
-                    className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
-                    min="0"
-                    step="1000"
-                  />
-                  <button
-                    onClick={() => handleInputChange('targetAmount', Number(simulationInputs.targetAmount) + 50000)}
                     className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20"
                   >
                     <Plus className="w-5 h-5" />

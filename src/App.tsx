@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { handleGoogleOAuthCallback } from './api/apiService';
 import { useDashboard } from './components/DashboardContext';
 import { Navigation } from './components/Navigation';
@@ -14,6 +14,8 @@ import { Toaster } from 'sonner';
 import { LoginModal } from './components/LoginModal';
 import { ForgotPassword } from './components/ForgotPassword';
 import { Footer } from './components/Footer';
+import { ProtectedRoute } from './components/routing/ProtectedRoute';
+import LoginPage from './pages/LoginPage';
 
 // Custom Cursor Component
 function CustomCursor() {
@@ -69,14 +71,34 @@ function CustomCursor() {
 }
 
 function AuthBootstrap() {
-  const { refreshAuthFromStorage } = useDashboard();
+  const { refreshAuthFromStorage, setLoginModalOpen, setIsLoginMode } = useDashboard();
+  const navigate = useNavigate();
+
   useEffect(() => {
-    // Handle token returned by Google on safe paths
-    handleGoogleOAuthCallback().finally(() => {
-      // Pull token/username/email from cookies/localStorage into context
-      refreshAuthFromStorage();
-    });
-  }, []);
+    let mounted = true;
+    (async () => {
+      const handled = await handleGoogleOAuthCallback(); // parses token & calls getMe
+      if (handled && mounted) {
+        refreshAuthFromStorage();
+        setIsLoginMode(true);
+        setLoginModalOpen(false);
+        // Force router navigation so homepage mounts properly
+        navigate('/', { replace: true });
+      }
+    })();
+
+    const onUnauthorized = () => {
+      if (!mounted) return;
+      setIsLoginMode(true);
+      setLoginModalOpen(true);
+    };
+    window.addEventListener('nafa-auth-unauthorized', onUnauthorized);
+    return () => {
+      mounted = false;
+      window.removeEventListener('nafa-auth-unauthorized', onUnauthorized);
+    };
+  }, [refreshAuthFromStorage, setLoginModalOpen, setIsLoginMode, navigate]);
+
   return null;
 }
 
@@ -120,11 +142,19 @@ function App() {
               />
             }
           />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/goal-simulation" element={<GoalSimulationPage />} />
+          <Route
+            path="/goal-simulation"
+            element={
+              <ProtectedRoute>
+                <GoalSimulationPage />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
         <Footer />
       </BrowserRouter>

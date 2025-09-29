@@ -17,7 +17,6 @@ interface DashboardContextType {
   setDashboardOpen: (open: boolean) => void;
   currentLanguage: Lang;
   setCurrentLanguage: (lang: Lang) => void;
-
   // Modals
   loginModalOpen: boolean;
   setLoginModalOpen: (open: boolean) => void;
@@ -25,13 +24,13 @@ interface DashboardContextType {
   setIsLoginMode: (isLogin: boolean) => void;
   forgotPasswordModalOpen: boolean;
   setForgotPasswordModalOpen: (open: boolean) => void;
-
   // Auth
   token: string | null;
   user: User;
   isAuthenticated: boolean;
+  // expose helpers
   refreshAuthFromStorage: () => void;
-  logout: () => void;
+  logout: () => void; // <-- add
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(
@@ -42,18 +41,6 @@ export const useDashboard = () => {
   const ctx = useContext(DashboardContext);
   if (!ctx) throw new Error('useDashboard must be used within a DashboardProvider');
   return ctx;
-};
-
-function readCookie(name: string): string | null {
-  const list = document.cookie ? document.cookie.split('; ') : [];
-  for (const pair of list) {
-    const [k, ...rest] = pair.split('=');
-    if (decodeURIComponent(k) === name) {
-      const raw = rest.join('=');
-      return decodeURIComponent(raw.replace(/\+/g, ' '));
-    }
-  }
-  return null;
 }
 
 // Safely decode JWT
@@ -77,52 +64,57 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [forgotPasswordModalOpen, setForgotPasswordModalOpen] = useState(false);
 
-  // Auth state
-  const [token, setToken] = useState<string | null>('demo-token');
-  const [user, setUser] = useState<User>({ username: 'Demo User', email: 'demo@nafaverse.com' });
+  // Auth state (from localStorage only)
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
+  const [user, setUser] = useState<User>(() => {
+    const t = localStorage.getItem('token');
+    if (!t) return null;
+    return {
+      username: localStorage.getItem('username'),
+      email: localStorage.getItem('email'),
+    };
+  });
 
   const refreshAuthFromStorage = () => {
-    const t = localStorage.getItem('token') || readCookie('token');
-    let username = readCookie('username');
-    let email = readCookie('email');
+    const t = localStorage.getItem('token');
+    let username = localStorage.getItem('username');
+    let email = localStorage.getItem('email');
 
-    // If name/email missing but token exists, try to derive from JWT
-    if (t && !username && !email) {
+    // If name/email missing but token exists, try to derive from JWT and persist to localStorage
+    if (t && (!username || !email)) {
       const payload: any = decodeJwt(t);
-      const nameFromJwt =
-        payload?.username || payload?.name || payload?.preferred_username || null;
+      const nameFromJwt = payload?.username || payload?.name || payload?.preferred_username || null;
       const emailFromJwt = payload?.email || null;
 
-      if (nameFromJwt || emailFromJwt) {
-        const maxAge = 60 * 60 * 24 * 7;
-        if (nameFromJwt) {
-          document.cookie = `username=${encodeURIComponent(nameFromJwt)}; path=/; max-age=${maxAge}`;
-          username = String(nameFromJwt);
-        }
-        if (emailFromJwt) {
-          document.cookie = `email=${encodeURIComponent(emailFromJwt)}; path=/; max-age=${maxAge}`;
-          email = String(emailFromJwt);
-        }
+      if (!username && nameFromJwt) {
+        username = String(nameFromJwt);
+        localStorage.setItem('username', username);
+      }
+      if (!email && emailFromJwt) {
+        email = String(emailFromJwt);
+        localStorage.setItem('email', email);
       }
     }
 
     setToken(t ?? null);
-    setUser(t ? { username, email } : null);
+    setUser(t ? { username: username ?? null, email: email ?? null } : null);
   };
 
   const logout = () => {
     try {
       localStorage.removeItem('token');
-      document.cookie = 'token=; path=/; Max-Age=0';
-      document.cookie = 'username=; path=/; Max-Age=0';
-      document.cookie = 'email=; path=/; Max-Age=0';
+      localStorage.removeItem('userId');
+      localStorage.removeItem('username');
+      localStorage.removeItem('email');
     } catch {}
-    setToken(null);
-    setUser(null);
     setDashboardOpen(false);
     setLoginModalOpen(false);
-    // notify any listeners (optional)
+    setIsLoginMode(true);
+    setUser(null);
+    setToken(null);
     window.dispatchEvent(new Event('nafa-auth-updated'));
+    // Hard redirect to ensure a clean app state
+    window.location.replace('/');
   };
 
   // Bootstrap from storage + listen for OAuth updates and storage changes
@@ -130,7 +122,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     refreshAuthFromStorage();
     const onAuthUpdated = () => refreshAuthFromStorage();
     const onStorage = (e: StorageEvent) => {
-      if (e.key === 'token') refreshAuthFromStorage();
+      if (e.key === 'token' || e.key === 'username' || e.key === 'email') refreshAuthFromStorage();
     };
     window.addEventListener('nafa-auth-updated', onAuthUpdated);
     window.addEventListener('storage', onStorage);
@@ -140,7 +132,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // If we have a token but no display name/email yet, try to fetch once
+  // If we have a token but no display name/email yet, fetch once and persist to localStorage
   useEffect(() => {
     const needsMe = !!token && (!user || (!user.username && !user.email));
     if (!needsMe) return;
@@ -148,14 +140,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       .getMe?.()
       ?.then((me: any) => {
         if (!me) return;
-        const maxAge = 60 * 60 * 24 * 7;
-        if (me.username) {
-          document.cookie = `username=${encodeURIComponent(me.username)}; path=/; max-age=${maxAge}`;
-        }
-        if (me.email) {
-          document.cookie = `email=${encodeURIComponent(me.email)}; path=/; max-age=${maxAge}`;
-        }
-        setUser({ username: me.username, email: me.email });
+        if (me.username) localStorage.setItem('username', String(me.username));
+        if (me.email) localStorage.setItem('email', String(me.email));
+        setUser({ username: me.username ?? null, email: me.email ?? null });
       })
       .catch(() => {});
   }, [token, user]);
@@ -179,7 +166,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
         user,
         isAuthenticated,
         refreshAuthFromStorage,
-        logout,
+        logout, // <-- expose
       }}
     >
       {children}
