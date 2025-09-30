@@ -23,7 +23,6 @@ class ApiService {
       (res) => res,
       (error) => {
         if (error?.response?.status === 401) {
-          // clear only localStorage
           localStorage.removeItem('token');
           localStorage.removeItem('userId');
           localStorage.removeItem('username');
@@ -44,20 +43,6 @@ class ApiService {
     const res = await this.api.post('auth/login', credentials);
     if (res.data?.token) {
       localStorage.setItem('token', res.data.token);
-      if (res.data.id || res.data.userId) {
-        localStorage.setItem('userId', String(res.data.id ?? res.data.userId));
-      }
-      if (res.data.username) localStorage.setItem('username', String(res.data.username));
-      if (res.data.email) localStorage.setItem('email', String(res.data.email));
-    }
-    return res.data;
-  }
-
-  // NEW: fetch current user using token
-  async getMe() {
-    const res = await this.api.get('auth/me'); // backend should return { id?, username?, email? }
-    // Optional: persist if backend returns details
-    if (res.data) {
       if (res.data.id || res.data.userId) {
         localStorage.setItem('userId', String(res.data.id ?? res.data.userId));
       }
@@ -95,6 +80,16 @@ class ApiService {
     const res = await this.api.post('simulations/create', payload);
     return res.data;
   }
+
+  // Add this stub at the end of the class or after methods:
+  async getMe() {
+    // No network call; read from localStorage only
+    return {
+      id: localStorage.getItem('userId') || null,
+      username: localStorage.getItem('username') || null,
+      email: localStorage.getItem('email') || null,
+    };
+  }
 }
 
 // Helper to decode JWT payload safely
@@ -107,11 +102,9 @@ function decodeJwt(token) {
   }
 }
 
-// Handle Google OAuth callback: save ONLY to localStorage
+// Handle Google OAuth callback: save ONLY to localStorage (no getMe)
 export async function handleGoogleOAuthCallback() {
   const { pathname, search, hash } = window.location;
-
-  // Accept these callback paths
   const allowed = new Set(['/', '/auth/callback', '/oauth/callback']);
   if (!allowed.has(pathname)) return false;
 
@@ -122,10 +115,7 @@ export async function handleGoogleOAuthCallback() {
   const token = get('token');
   if (!token) return false;
 
-  // Save token so interceptor adds Authorization
   localStorage.setItem('token', token);
-
-  // Optional extras from URL
   const id = get('id') || get('userId');
   const name = get('name') || get('username');
   const email = get('email');
@@ -133,20 +123,7 @@ export async function handleGoogleOAuthCallback() {
   if (name) localStorage.setItem('username', String(name));
   if (email) localStorage.setItem('email', String(email));
 
-  // Verify with backend (fills missing fields)
-  try {
-    const me = await apiService.getMe();
-    if (me) {
-      if (me.id || me.userId) localStorage.setItem('userId', String(me.id ?? me.userId));
-      if (me.username) localStorage.setItem('username', String(me.username));
-      if (me.email) localStorage.setItem('email', String(me.email));
-    }
-  } catch {
-    // ignore network/server errors; local data still set
-  }
-
-  // Hard redirect so the SPA mounts Home cleanly
-  window.location.replace('/'); // instead of history.replaceState
+  window.location.replace('/'); // hard redirects
   return true;
 }
 

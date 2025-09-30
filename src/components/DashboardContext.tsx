@@ -6,7 +6,6 @@ import React, {
   useState,
   type ReactNode,
 } from 'react';
-import { apiService } from '../api/apiService';
 
 type Lang = 'en' | 'ur';
 type User = { username?: string | null; email?: string | null } | null;
@@ -17,20 +16,23 @@ interface DashboardContextType {
   setDashboardOpen: (open: boolean) => void;
   currentLanguage: Lang;
   setCurrentLanguage: (lang: Lang) => void;
-  // Modals
+
+  // Auth modal state
   loginModalOpen: boolean;
   setLoginModalOpen: (open: boolean) => void;
-  isLoginMode: boolean;
+  isLoginMode: boolean; // true=login, false=signup
   setIsLoginMode: (isLogin: boolean) => void;
   forgotPasswordModalOpen: boolean;
   setForgotPasswordModalOpen: (open: boolean) => void;
-  // Auth
+
+  // Auth data
   token: string | null;
   user: User;
   isAuthenticated: boolean;
-  // expose helpers
+
+  // Helpers
   refreshAuthFromStorage: () => void;
-  logout: () => void; // <-- add
+  logout: () => void;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(
@@ -39,65 +41,33 @@ const DashboardContext = createContext<DashboardContextType | undefined>(
 
 export const useDashboard = () => {
   const ctx = useContext(DashboardContext);
-  if (!ctx) throw new Error('useDashboard must be used within a DashboardProvider');
+  if (!ctx) throw new Error('useDashboard must be used within DashboardProvider');
   return ctx;
-}
-
-// Safely decode JWT
-function decodeJwt(token: string | null) {
-  try {
-    if (!token) return null;
-    const base64 = token.split('.')[1] || '';
-    return JSON.parse(atob(base64));
-  } catch {
-    return null;
-  }
-}
+};
 
 export function DashboardProvider({ children }: { children: ReactNode }) {
-  // UI state
+  // UI
   const [dashboardOpen, setDashboardOpen] = useState(false);
   const [currentLanguage, setCurrentLanguage] = useState<Lang>('en');
 
-  // Modals
+  // Auth modals
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [forgotPasswordModalOpen, setForgotPasswordModalOpen] = useState(false);
 
-  // Auth state (from localStorage only)
+  // Auth data (localStorage only)
   const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
-  const [user, setUser] = useState<User>(() => {
-    const t = localStorage.getItem('token');
-    if (!t) return null;
-    return {
-      username: localStorage.getItem('username'),
-      email: localStorage.getItem('email'),
-    };
-  });
+  const [user, setUser] = useState<User>(() => ({
+    username: localStorage.getItem('username'),
+    email: localStorage.getItem('email'),
+  }));
 
   const refreshAuthFromStorage = () => {
-    const t = localStorage.getItem('token');
-    let username = localStorage.getItem('username');
-    let email = localStorage.getItem('email');
-
-    // If name/email missing but token exists, try to derive from JWT and persist to localStorage
-    if (t && (!username || !email)) {
-      const payload: any = decodeJwt(t);
-      const nameFromJwt = payload?.username || payload?.name || payload?.preferred_username || null;
-      const emailFromJwt = payload?.email || null;
-
-      if (!username && nameFromJwt) {
-        username = String(nameFromJwt);
-        localStorage.setItem('username', username);
-      }
-      if (!email && emailFromJwt) {
-        email = String(emailFromJwt);
-        localStorage.setItem('email', email);
-      }
-    }
-
-    setToken(t ?? null);
-    setUser(t ? { username: username ?? null, email: email ?? null } : null);
+    setToken(localStorage.getItem('token'));
+    setUser({
+      username: localStorage.getItem('username'),
+      email: localStorage.getItem('email'),
+    });
   };
 
   const logout = () => {
@@ -107,17 +77,15 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem('username');
       localStorage.removeItem('email');
     } catch {}
+    setToken(null);
+    setUser({ username: null, email: null });
     setDashboardOpen(false);
     setLoginModalOpen(false);
     setIsLoginMode(true);
-    setUser(null);
-    setToken(null);
     window.dispatchEvent(new Event('nafa-auth-updated'));
-    // Hard redirect to ensure a clean app state
-    window.location.replace('/');
+    window.location.replace('/'); // redirect to homepage
   };
 
-  // Bootstrap from storage + listen for OAuth updates and storage changes
   useEffect(() => {
     refreshAuthFromStorage();
     const onAuthUpdated = () => refreshAuthFromStorage();
@@ -132,41 +100,30 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // If we have a token but no display name/email yet, fetch once and persist to localStorage
-  useEffect(() => {
-    const needsMe = !!token && (!user || (!user.username && !user.email));
-    if (!needsMe) return;
-    apiService
-      .getMe?.()
-      ?.then((me: any) => {
-        if (!me) return;
-        if (me.username) localStorage.setItem('username', String(me.username));
-        if (me.email) localStorage.setItem('email', String(me.email));
-        setUser({ username: me.username ?? null, email: me.email ?? null });
-      })
-      .catch(() => {});
-  }, [token, user]);
-
   const isAuthenticated = useMemo(() => !!token, [token]);
 
   return (
     <DashboardContext.Provider
       value={{
+        // UI
         dashboardOpen,
         setDashboardOpen,
         currentLanguage,
         setCurrentLanguage,
+        // Modals
         loginModalOpen,
         setLoginModalOpen,
         isLoginMode,
         setIsLoginMode,
         forgotPasswordModalOpen,
         setForgotPasswordModalOpen,
+        // Auth
         token,
         user,
         isAuthenticated,
+        // Helpers
         refreshAuthFromStorage,
-        logout, // <-- expose
+        logout,
       }}
     >
       {children}
