@@ -244,61 +244,6 @@ export const GoalSimulationPage: React.FC = () => {
     };
   };
 
-  // Dummy AI-like fallbacks (used if API not reachable)
-  const dummyGoalResponse = (goalName: string, city: string, targetYear: number, roiRate: number, inflationRate: number): ApiGoalResult => {
-    const start = currentYear;
-    const end = targetYear;
-    const years = Math.max(1, end - start);
-    // conservative rise ~6-8% net
-    const startValue = 1000000;
-    let pv = startValue;
-    const graph: GraphPoint[] = [];
-    for (let y = start; y <= end; y++) {
-      graph.push({ year: y, projectedValue: Math.round(pv) });
-      pv = Math.round(pv * (1 + Math.max(0.04, (roiRate - inflationRate) / 100 + 0.02)));
-    }
-    return {
-      goalName,
-      city,
-      targetYear,
-      roiRate,
-      inflationRate,
-      monthlySavingRequired: 13000,
-      finalAmount: graph[graph.length - 1].projectedValue,
-      estimatedCost: graph[graph.length - 1].projectedValue,
-      graphData: graph
-    };
-  };
-
-  const dummySimulationResponse = (city: string, years: number, oneTime: number, monthly: number, roiRate: number, inflationRate: number): ApiSimulationResult => {
-    const start = currentYear;
-    const graph: GraphPoint[] = [];
-    let total = oneTime;
-    let acc = oneTime;
-    const monthlyRate = roiRate / 100 / 12;
-    for (let i = 0; i < years; i++) {
-      // grow existing
-      acc = Math.round(acc * (1 + roiRate / 100));
-      // add monthly and grow monthly via monthly compounding
-      const yearlyMonthlyFV = Math.round(monthly * ((Math.pow(1 + monthlyRate, 12) - 1) / monthlyRate));
-      acc += yearlyMonthlyFV;
-      total += monthly * 12;
-      graph.push({ year: start + i, projectedValue: acc });
-    }
-    return {
-      city,
-      oneTimeInvestment: oneTime,
-      monthlyInvestment: monthly,
-      duration: [years],
-      inflationRate: [inflationRate],
-      roiRate,
-      totalInvestment: total,
-      totalAmount: acc,
-      finalAmount: acc,
-      graphData: graph
-    };
-  };
-
   const handlePlannerSubmit = async () => {
     if (!selectedGoalName) return;
 
@@ -326,7 +271,7 @@ export const GoalSimulationPage: React.FC = () => {
 
       // ONLY these fields go to backend
       const payload = {
-        goalName: computedGoalName, // e.g., "Perform Umrah" or "Perform Hajj"
+        goalName: computedGoalName,
         city: plannerCity,
         targetYear: plannerYear,
         prompt: GOAL_FIXED_PROMPT,
@@ -336,23 +281,26 @@ export const GoalSimulationPage: React.FC = () => {
       const yearsUntil = Math.max(1, plannerYear - currentYear);
       setSimulationInputs(prev => ({ ...prev, time: yearsUntil }));
 
-      let data: ApiGoalResult | null = null;
-      try {
-        data = await apiService.createGoalPlan(payload);
-      } catch (err: any) {
-        if (err?.response?.status === 401) {
-          pushToast({ variant: 'error', title: 'Session expired', description: 'Please log in again.' });
-          setPlannerOpen(false);
-          return;
-        }
-        // Non-401 fallback
-        await new Promise(r => setTimeout(r, 1000));
-        data = dummyGoalResponse(computedGoalName, plannerCity, plannerYear, simulationInputs.roi, simulationInputs.inflationRate);
-      }
+  // Call real API (no dummy fallback)
+  let data: ApiGoalResult;
+  try {
+    data = await apiService.createGoalPlan(payload);
+    console.log("Received goal plan data:", data);
+  } catch (err: any) {
+    if (err?.response?.status === 401) {
+      pushToast({ variant: 'error', title: 'Session expired', description: 'Please log in again.' });
+    } else if (err?.response?.status === 429) {
+      pushToast({ variant: 'error', title: 'AI quota exceeded', description: 'Please try again later.' });
+    } else {
+      pushToast({ variant: 'error', title: 'Failed to generate goal plan', description: 'Please try again later.' });
+    }
+    setPlannerOpen(false);
+    return;
+  }
 
-      const unified = unifyFromGoalApi(data!);
-      setSimulationResult(unified);
-      pushToast({
+  const unified = unifyFromGoalApi(data);
+  setSimulationResult(unified);
+  pushToast({
         variant: 'success',
         title: 'Goal plan ready',
         description: `${unified.meta?.goalName || 'Goal'} • ${unified.meta?.city || ''}`
@@ -508,20 +456,21 @@ export const GoalSimulationPage: React.FC = () => {
     setAiLoading(true);
 
     try {
-      let data: ApiSimulationResult | null = null;
+      // Call real API (no dummy fallback)
+      let data: ApiSimulationResult;
       try {
         data = await apiService.createSimulationPlan(payload);
+        console.log("simulation response:", data);
       } catch (err: any) {
         if (err?.response?.status === 401) {
           pushToast({ variant: 'error', title: 'Session expired', description: 'Please log in again.' });
-          return;
+        } else {
+          pushToast({ variant: 'error', title: 'Simulation failed', description: 'Please try again later.' });
         }
-        // Non-401 fallback
-        await new Promise(r => setTimeout(r, 1000));
-        data = dummySimulationResponse(city, time, initialAmount, monthlyInvestment, roi, inflationRate);
+        return;
       }
 
-      const unified = unifyFromSimulationApi(data!, monthlyInvestment);
+      const unified = unifyFromSimulationApi(data, monthlyInvestment);
       setSimulationResult(unified);
       pushToast({ variant: 'success', title: 'Simulation complete', description: `Projection for ${city} over ${time} years` });
       scrollToSection(resultRef);

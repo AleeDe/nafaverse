@@ -55,6 +55,7 @@ class ApiService {
   googleLogin() {
     // Spring Security’s OAuth2 entrypoint
     window.location.href = 'https://nafaversebackend.onrender.com/oauth2/authorization/google';
+    // window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   }
 
   async requestPasswordReset(email) {
@@ -71,6 +72,7 @@ class ApiService {
   async createGoalPlan(payload) {
     // payload: { goalName, city, targetYear, prompt }
     const res = await this.api.post('goals/create', payload);
+    console.log("goal response:", res.data);
     return res.data;
   }
 
@@ -78,6 +80,8 @@ class ApiService {
   async createSimulationPlan(payload) {
     // payload: { city, durationYears, oneTimeInvestment, monthlyInvestment, roiRate, inflationRate, prompt }
     const res = await this.api.post('simulations/create', payload);
+    console.log("simulation response:", res.data);
+    
     return res.data;
   }
 
