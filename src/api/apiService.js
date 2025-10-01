@@ -3,8 +3,8 @@ import axios from 'axios';
 class ApiService {
   constructor() {
     this.api = axios.create({
-      // baseURL: 'https://nafaversebackend.onrender.com/api/',
-      baseURL: 'http://localhost:8080/api/',
+      baseURL: 'https://nafaversebackend.onrender.com/api/',
+      // baseURL: 'http://localhost:8080/api/',
       timeout: 10000,
       headers: { 'Content-Type': 'application/json' },
     });
@@ -54,8 +54,8 @@ class ApiService {
 
   googleLogin() {
     // Spring Security’s OAuth2 entrypoint
-    // window.location.href = 'https://nafaversebackend.onrender.com/oauth2/authorization/google';
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+    window.location.href = 'https://nafaversebackend.onrender.com/oauth2/authorization/google';
+    // window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   }
 
   async requestPasswordReset(email) {
