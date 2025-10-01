@@ -70,18 +70,21 @@ class ApiService {
 
   // GOALS: POST /api/goals/create
   async createGoalPlan(payload) {
-    // payload: { goalName, city, targetYear, prompt }
-    const res = await this.api.post('goals/create', payload);
+    const token = localStorage.getItem('token');
+    const res = await this.api.post('goals/create', payload, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
     console.log("goal response:", res.data);
     return res.data;
   }
 
   // SIMULATIONS: POST /api/simulations/create
   async createSimulationPlan(payload) {
-    // payload: { city, durationYears, oneTimeInvestment, monthlyInvestment, roiRate, inflationRate, prompt }
-    const res = await this.api.post('simulations/create', payload);
+    const token = localStorage.getItem('token');
+    const res = await this.api.post('simulations/create', payload, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
     console.log("simulation response:", res.data);
-    
     return res.data;
   }
 
