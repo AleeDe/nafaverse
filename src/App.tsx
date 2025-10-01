@@ -12,7 +12,7 @@ import { GoalSimulationPage } from './pages/GoalSimulationPage';
 import { DashboardProvider } from './components/DashboardContext';
 import { Toaster } from 'sonner';
 import { LoginModal } from './components/LoginModal';
-import { ForgotPassword } from './components/ForgotPassword';
+import ForgotPassword from './components/ForgotPassword';
 import { Footer } from './components/Footer';
 import { ProtectedRoute } from './components/routing/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
