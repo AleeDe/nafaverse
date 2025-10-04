@@ -62,6 +62,7 @@ export function ComingSoonPage() {
               <Sparkles className="w-16 h-16 text-[#8B5CF6] mx-auto animate-pulse-custom mb-6" />
             </div>
             
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 tracking-tight">
               {displayText}
               <span className="animate-pulse">|</span>
             </h1>
