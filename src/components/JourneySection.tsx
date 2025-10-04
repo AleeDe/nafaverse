@@ -18,8 +18,13 @@ export const JourneySection = () => {
   };
 
   const handleStepClick = (stepIndex: number, stepType: string) => {
-    // Direct navigation since user is assumed to be logged in
-    navigate('/goal-simulation');
+    if (stepType === 'simulate') {
+      // Direct navigation since user is assumed to be logged in
+      navigate('/goal-simulation');
+    } else {
+      // For understand and grow, show coming soon
+      navigate('/coming-soon');
+    }
   };
   const content = {
     en: {
@@ -27,22 +32,24 @@ export const JourneySection = () => {
       journeySubtitle: 'Three simple steps to transform your financial future',
       understand: 'Understand',
       understandDesc: 'Learn investment fundamentals through interactive content.',
-      simulate: 'Simulate',
+      simulate: 'Goal Tracking and Simulate',
       simulateDesc: 'Practice with virtual portfolios & see real-time market scenarios.',
       grow: 'Grow',
       growDesc: 'Execute with confidence & track your progress.',
-      readyToStart: 'Ready to start? Join today →'
+      readyToStart: 'Ready to start? Join today →',
+      comingSoon: 'Coming Soon...'
     },
     ur: {
       journeyTitle: 'Aap ka safar financial azaadi ki taraf',
       journeySubtitle: 'Sirf 3 asaan qadam jo future badal dein',
       understand: 'Samjho',
       understandDesc: 'Interactive content se investment ki bunyaadi baatein seekho.',
-      simulate: 'Simulate karo',
+      simulate: 'Goal Tracking and Simulate',
       simulateDesc: 'Virtual portfolio par practice karo aur real-time market scenarios dekho.',
       grow: 'Grow karo',
       growDesc: 'Itiqaad ke saath execute karo aur apni progress track karo.',
-      readyToStart: 'Start karne ko tayar? Aaj hi join karo →'
+      readyToStart: 'Start karne ko tayar? Aaj hi join karo →',
+      comingSoon: 'Coming Soon...'
     }
   } as const;
 
