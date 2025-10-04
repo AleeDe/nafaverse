@@ -19,10 +19,9 @@ export const JourneySection = () => {
 
   const handleStepClick = (stepIndex: number, stepType: string) => {
     if (stepType === 'simulate') {
-      // Direct navigation since user is assumed to be logged in
       navigate('/goal-simulation');
     } else {
-      // For understand and grow, show coming soon
+      // Direct navigation to coming soon for understand and grow
       navigate('/coming-soon');
     }
   };

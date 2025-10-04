@@ -27,11 +27,17 @@ export function ComingSoonPage() {
   const fullText = t.comingSoon;
 
   useEffect(() => {
+    // Reset animation when component mounts
+    setDisplayText('');
+    setCurrentIndex(0);
+  }, []);
+
+  useEffect(() => {
     if (currentIndex < fullText.length) {
       const timeout = setTimeout(() => {
         setDisplayText(prev => prev + fullText[currentIndex]);
         setCurrentIndex(prev => prev + 1);
-      }, 100);
+      }, 80); // Slightly faster typing
       return () => clearTimeout(timeout);
     }
   }, [currentIndex, fullText]);
