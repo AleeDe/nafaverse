@@ -151,6 +151,12 @@ export const GoalSimulationPage: React.FC = () => {
     return n.includes('umrah') || n.includes('hajj');
   }, [selectedGoalName]);
 
+  // NEW: detect Study Abroad goal
+  const isStudyAbroad = useMemo(() => {
+    const n = (selectedGoalName || '').toLowerCase();
+    return n.includes('study abroad') || (n.includes('study') && n.includes('abroad'));
+  }, [selectedGoalName]);
+
   // AI Loader + Toasts
   const [aiLoading, setAiLoading] = useState(false);
   const [aiMessage, setAiMessage] = useState('Talking to our AI planner…');
@@ -359,7 +365,8 @@ export const GoalSimulationPage: React.FC = () => {
         },
         { 
           name: 'Study Abroad', 
-          desc: 'Achieve your international education goals with structured savings plans and scholarship guidance.',
+          // updated description: include a visual break and explicit instruction to fill the destination city
+          desc: 'Achieve your international education goals with structured savings plans and scholarship guidance.\n\nPlease enter the city where you want to study (e.g., London, Toronto) so we can tailor cost estimates and living expenses.',
           image: '/images/univeristy image.jpg',
           icon: GraduationCap
         },
@@ -406,7 +413,8 @@ export const GoalSimulationPage: React.FC = () => {
         },
         { 
           name: 'Study Abroad', 
-          desc: 'Structured savings plans aur scholarship guidance ke saath international education goals achieve karein.',
+          // updated Urdu description: ask for destination city
+          desc: 'International taleem ke goals hasil karne ke liye structured savings aur scholarship guidance. Barah-e-karam woh shehar darj karein jahan aap parhai karna chahte hain (misal: London, Toronto) taake hum andazan kharch aur rehna sahulat ke mutabiq estimate de saken.',
           image: '/images/univeristy image.jpg',
           icon: GraduationCap
         },
@@ -423,6 +431,18 @@ export const GoalSimulationPage: React.FC = () => {
   };
 
   const t = content[currentLanguage];
+
+  // NEW: placeholders
+  const simCityPlaceholder =
+    currentLanguage === 'ur'
+      ? 'Apna shehar likhein (misal: Karachi)'
+      : 'Enter your city (e.g., Karachi)';
+
+  const plannerCityPlaceholder = isStudyAbroad
+    ? (currentLanguage === 'ur'
+        ? 'Jis shehar mein parhai karna chahte hain, woh likhein (misal: London, Toronto)'
+        : 'Enter the city where you want to study (e.g., London, Toronto)')
+    : simCityPlaceholder;
 
   // Stable phrases list per language
   const heroPhrases = useMemo(() => t.placeholders.slice(), [currentLanguage]);
@@ -672,7 +692,7 @@ export const GoalSimulationPage: React.FC = () => {
                             </div>
                             <h3 className="text-xs font-semibold text-gray-900 truncate">{goal.name}</h3>
                           </div>
-                          <p className="text-xs text-gray-600 mb-2 leading-tight line-clamp-3">
+                          <p className="text-xs text-gray-600 mb-2 leading-tight line-clamp-3 whitespace-pre-line">
                             {goal.desc}
                           </p>
                         </div>
@@ -717,7 +737,7 @@ export const GoalSimulationPage: React.FC = () => {
                   type="text"
                   value={simulationInputs.city}
                   onChange={(e) => handleInputChange('city', e.target.value)}
-                  placeholder={currentLanguage === 'ur' ? 'Jaise Karachi' : 'e.g., Karachi'}
+                  placeholder={simCityPlaceholder} // <-- generic for Simulation section
                   className="w-full px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold placeholder:text-white/60"
                 />
               </div>
@@ -1046,22 +1066,26 @@ export const GoalSimulationPage: React.FC = () => {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Goal Name</label>
+                  {/* label -> black */}
+                  <label className="block text-sm font-medium text-black mb-1">Goal Name</label>
+                  {/* input -> black text */}
                   <input
                     type="text"
                     value={selectedGoalName || ''}
                     readOnly
-                    className="w-full px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-900"
+                    className="w-full px-3 py-2 rounded-lg bg-gray-50 border border-gray-200 text-black"
                   />
                 </div>
 
                 {isPilgrimage && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Journey Type</label>
+                    {/* label -> black */}
+                    <label className="block text-sm font-medium text-black mb-1">Journey Type</label>
+                    {/* select -> black text */}
                     <select
                       value={plannerSubType}
                       onChange={(e) => setPlannerSubType(e.target.value as 'Umrah' | 'Hajj')}
-                      className="w-full px-3 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                      className="w-full px-3 py-2 rounded-lg bg-white border border-gray-300 text-black focus:outline-none focus:ring-2 focus:ring-purple-500/50"
                     >
                       <option value="Umrah">Umrah</option>
                       <option value="Hajj">Hajj</option>
@@ -1070,22 +1094,26 @@ export const GoalSimulationPage: React.FC = () => {
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                  {/* label -> black */}
+                  <label className="block text-sm font-medium text-black mb-1">City</label>
+                  {/* input -> black text + black placeholder */}
                   <input
                     type="text"
-                    placeholder="e.g., Karachi"
+                    placeholder={plannerCityPlaceholder}
                     value={plannerCity}
                     onChange={(e) => setPlannerCity(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-gray-300 text-black placeholder:text-black focus:outline-none focus:ring-2 focus:ring-purple-500/50"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Target Year</label>
+                  {/* label -> black */}
+                  <label className="block text-sm font-medium text-black mb-1">Target Year</label>
+                  {/* select -> black text */}
                   <select
                     value={plannerYear}
                     onChange={(e) => setPlannerYear(parseInt(e.target.value, 10))}
-                    className="w-full px-3 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                    className="w-full px-3 py-2 rounded-lg bg-white border border-gray-300 text-black focus:outline-none focus:ring-2 focus:ring-purple-500/50"
                   >
                     {yearOptions.map((y) => (
                       <option key={y} value={y}>{y}</option>
