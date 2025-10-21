@@ -13,12 +13,45 @@ export const JourneySection = () => {
   const navigate = useNavigate();
 
   const handleProtectedAction = (action: string) => {
-    // Direct navigation since user is assumed to be logged in
+    // Ready-to-start should go to simulator if logged in, otherwise show login
+    if (action === 'ready-to-start') {
+      if (isAuthenticated) {
+        navigate('/goal-simulation');
+      } else {
+        setIsLoginMode(true);
+        setLoginModalOpen(true);
+      }
+      return;
+    }
+    // fallback
     navigate('/goal-simulation');
   };
-
+  
   const handleStepClick = (stepIndex: number, stepType: string) => {
-    // Direct navigation since user is assumed to be logged in
+    // Simulate -> simulator (require login)
+    if (stepType === 'simulate') {
+      if (isAuthenticated) {
+        navigate('/goal-simulation');
+      } else {
+        setIsLoginMode(true);
+        setLoginModalOpen(true);
+      }
+      return;
+    }
+
+    // Understand & Grow -> show "coming soon" only for logged-in users,
+    // else prompt login
+    if (stepType === 'understand' || stepType === 'grow') {
+      if (isAuthenticated) {
+        navigate('/coming-soon');
+      } else {
+        setIsLoginMode(true);
+        setLoginModalOpen(true);
+      }
+      return;
+    }
+
+    // default fallback
     navigate('/goal-simulation');
   };
   const content = {
@@ -41,37 +74,33 @@ export const JourneySection = () => {
       simulate: 'Simulate karo',
       simulateDesc: 'Virtual portfolio par practice karo aur real-time market scenarios dekho.',
       grow: 'Grow karo',
-      growDesc: 'Itiqaad ke saath execute karo aur apni progress track karo.',
-      readyToStart: 'Start karne ko tayar? Aaj hi join karo →'
+      growDesc: 'Aitmaad ke sath amal karo aur apne taraqqi ko track karo.',
+      readyToStart: 'Shuru karne ke liye tayyar? Aaj hi shamil hon →'
     }
-  } as const;
+  };
 
-  const t = content[currentLanguage] || content.en;
-
-  if (loading) {
-    return <SkeletonLoader type="page" />;
-  }
+  const t = content[currentLanguage];
 
   const steps = [
     {
-      icon: Brain,
       title: t.understand,
       description: t.understandDesc,
-      color: 'from-[#1E1B4B] to-[#8B5CF6]',
+      icon: Brain,
+      color: 'from-[#4F46E5] to-[#3B82F6]',
       type: 'understand'
     },
     {
-      icon: Target,
       title: t.simulate,
       description: t.simulateDesc,
-      color: 'from-[#8B5CF6] to-[#F59E0B]',
+      icon: TrendingUp,
+      color: 'from-[#10B981] to-[#06B6D4]',
       type: 'simulate'
     },
     {
-      icon: TrendingUp,
       title: t.grow,
       description: t.growDesc,
-      color: 'from-[#F59E0B] to-[#1E1B4B]',
+      icon: Target,
+      color: 'from-[#F59E0B] to-[#F97316]',
       type: 'grow'
     }
   ];

@@ -16,6 +16,7 @@ import ForgotPassword from './components/ForgotPassword';
 import { Footer } from './components/Footer';
 import { ProtectedRoute } from './components/routing/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
+import { ComingSoonPage } from './pages/ComingSoonPage';
 
 // Custom Cursor Component
 function CustomCursor() {
@@ -155,6 +156,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/coming-soon" element={<ComingSoonPage />} />
         </Routes>
         <Footer />
       </BrowserRouter>

@@ -179,7 +179,8 @@ export const LoginModal: React.FC = () => {
       } else if (err?.response?.status === 500) {
         toast.error('Server error. Try again later.', { position: 'top-center' });
       } else {
-        toast.error('Request failed. Please try again.', { position: 'top-center' });
+        setError('Server may be sleeping on the free host. It can take ~40 seconds to wake — please try again after 40s.');
+        toast.error('Server may be sleeping on the free host. It can take ~40 seconds to wake — please try again after 40s.', { position: 'top-center' });
       }
     } finally {
       setLoading(false);

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Contact } from '../components/Contact';
-import { Footer } from '../components/Footer';
 import { SkeletonLoader } from '../components/SkeletonLoader';
 import { ArrowUp } from 'lucide-react';
 import { useDashboard } from '../components/DashboardContext';

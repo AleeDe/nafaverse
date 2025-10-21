@@ -97,6 +97,16 @@ class ApiService {
       email: localStorage.getItem('email') || null,
     };
   }
+
+  // submit contact feedback -> POST /api/contact-feedback/submit
+  async submitContactFeedback(payload) {
+    console.log(payload);
+    
+    const res = await this.api.post('contact-feedback/submit', payload);
+    console.log("res "+ res.data);
+    
+    return res.data;
+  }
 }
 
 // Helper to decode JWT payload safely

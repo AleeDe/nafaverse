@@ -1,16 +1,37 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { apiService } from '../api/apiService'; // added api import
 
 interface ContactProps {
   currentLanguage: 'en' | 'ur';
 }
 
-export const Contact: React.FC<ContactProps> = ({ currentLanguage }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: ''
-  });
+export function Contact(props: { currentLanguage: 'en' | 'ur' }) {
+  // --------- added submission state & handler (no design changes) ----------
+  const [cfName, setCfName] = useState('');
+  const [cfEmail, setCfEmail] = useState('');
+  const [cfMessage, setCfMessage] = useState('');
+  const [cfSubmitting, setCfSubmitting] = useState(false);
+  const [cfStatus, setCfStatus] = useState<string | null>(null);
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCfSubmitting(true);
+    setCfStatus(null);
+    try {
+      await apiService.submitContactFeedback({ name: cfName, email: cfEmail, message: cfMessage });
+      setCfName('');
+      setCfEmail('');
+      setCfMessage('');
+      setCfStatus('success');
+    } catch (err) {
+      console.error(err);
+      setCfStatus('error');
+    } finally {
+      setCfSubmitting(false);
+    }
+  };
+  // -------------------------------------------------------------------------
 
   const content = {
     en: {
@@ -43,20 +64,7 @@ export const Contact: React.FC<ContactProps> = ({ currentLanguage }) => {
     }
   } as const;
 
-  const t = content[currentLanguage];
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Handle form submission here
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  const t = content[props.currentLanguage];
 
   return (
     <div className="pt-16 min-h-screen bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81] relative overflow-hidden px-2 sm:px-0 overflow-x-hidden">
@@ -79,7 +87,7 @@ export const Contact: React.FC<ContactProps> = ({ currentLanguage }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Form */}
           <div className="nv-card rounded-2xl p-8 shadow-lg">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleContactSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-purple-100 mb-2">
                   {t.form.name}
@@ -87,8 +95,8 @@ export const Contact: React.FC<ContactProps> = ({ currentLanguage }) => {
                 <input
                   type="text"
                   name="name"
-                  value={formData.name}
-                  onChange={handleChange}
+                  value={cfName}
+                  onChange={(e) => setCfName(e.target.value)}
                   className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:ring-2 focus:ring-[#A786DF] focus:border-transparent"
                   required
                 />
@@ -101,8 +109,8 @@ export const Contact: React.FC<ContactProps> = ({ currentLanguage }) => {
                 <input
                   type="email"
                   name="email"
-                  value={formData.email}
-                  onChange={handleChange}
+                  value={cfEmail}
+                  onChange={(e) => setCfEmail(e.target.value)}
                   className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:ring-2 focus:ring-[#A786DF] focus:border-transparent"
                   required
                 />
@@ -114,8 +122,8 @@ export const Contact: React.FC<ContactProps> = ({ currentLanguage }) => {
                 </label>
                 <textarea
                   name="message"
-                  value={formData.message}
-                  onChange={handleChange}
+                  value={cfMessage}
+                  onChange={(e) => setCfMessage(e.target.value)}
                   rows={5}
                   className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:ring-2 focus:ring-[#A786DF] focus:border-transparent"
                   required
@@ -124,11 +132,14 @@ export const Contact: React.FC<ContactProps> = ({ currentLanguage }) => {
               
               <button
                 type="submit"
+                disabled={cfSubmitting}
                 className="w-full nv-glow-btn py-3 px-6 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center"
               >
-                <Send className="w-5 h-5 mr-2" />
-                {t.form.send}
+                {cfSubmitting ? 'Sending...' : <><Send className="w-5 h-5 mr-2" />{t.form.send}</>}
               </button>
+
+              {cfStatus === 'success' && <div className="text-sm text-green-400 mt-2">Sent — thank you.</div>}
+              {cfStatus === 'error' && <div className="text-sm text-red-400 mt-2">Submission failed. Try again.</div>}
             </form>
           </div>
 

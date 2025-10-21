@@ -183,9 +183,6 @@ export const GoalSimulationPage: React.FC = () => {
   };
 
   // Small helpers
-  const base = (import.meta as any)?.env?.VITE_API_BASE_URL || '';
-  const GOAL_API = `${base}/api/goals/create`;        // plug your real endpoint
-  const SIM_API = `${base}/api/simulations/create`;     // plug your real endpoint
   const GOAL_FIXED_PROMPT =
     'Use PKR as currency. Round amounts to the nearest thousand. Prefer conservative estimates.';
   const SIM_FIXED_PROMPT =
@@ -193,7 +190,10 @@ export const GoalSimulationPage: React.FC = () => {
 
   // Normalize API responses to one shape the UI understands
   const unifyFromGoalApi = (data: ApiGoalResult): UnifiedResult => {
+    console.log(data);
+    
     const monthlyInvestment = Math.round(data.monthlySavingRequired ?? 0);
+    
     const finalAmount =
       Math.round(
         data.finalAmount ??
@@ -207,7 +207,8 @@ export const GoalSimulationPage: React.FC = () => {
     return {
       monthlyInvestment,
       finalAmount,
-      totalInvestment: undefined, // not always provided by goal API
+
+      totalInvestment: Math.round(data.totalInvestment ?? 0), // not always provided by goal API
       chartData,
       from: 'planner',
       meta: {
@@ -728,29 +729,30 @@ export const GoalSimulationPage: React.FC = () => {
               {t.simulateTitle}
             </h2>
 
-            {/* Input Grid */}
+            {/* Input Grid - single column on small, two on md+ */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
               {/* City */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                <label className="block text-white font-semibold mb-4 text-lg">{t.city}</label>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/20">
+                <label className="block text-white font-semibold mb-3 text-lg">{t.city}</label>
                 <input
                   type="text"
                   value={simulationInputs.city}
                   onChange={(e) => handleInputChange('city', e.target.value)}
-                  placeholder={simCityPlaceholder} // <-- generic for Simulation section
-                  className="w-full px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold placeholder:text-white/60"
+                  placeholder={simCityPlaceholder}
+                  className="w-full px-3 sm:px-4 py-3 sm:py-4 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-base sm:text-lg font-semibold placeholder:text-white/60 min-w-0"
                 />
               </div>
 
               {/* Time (years) */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                <label className="block text-white font-semibold mb-4 text-lg">{t.time}</label>
-                <div className="flex items-center gap-4">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/20">
+                <label className="block text-white font-semibold mb-3 text-lg">{t.time}</label>
+                <div className="flex items-center gap-3">
                   <button
                     onClick={() => handleInputChange('time', Math.max(1, Number(simulationInputs.time) - 1))}
-                    className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20"
+                    className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20 flex-shrink-0"
+                    aria-label="decrease time"
                   >
-                    <Minus className="w-5 h-5" />
+                    <Minus className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                   <input
                     type="number"
@@ -759,28 +761,30 @@ export const GoalSimulationPage: React.FC = () => {
                       const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0;
                       handleInputChange('time', value);
                     }}
-                    className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
+                    className="flex-1 px-3 sm:px-4 py-3 sm:py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-base sm:text-lg font-semibold min-w-0"
                     min="1"
                     step="1"
                   />
                   <button
                     onClick={() => handleInputChange('time', Number(simulationInputs.time) + 1)}
-                    className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20"
+                    className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20 flex-shrink-0"
+                    aria-label="increase time"
                   >
-                    <Plus className="w-5 h-5" />
+                    <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
               </div>
 
               {/* ROI (%) */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                <label className="block text-white font-semibold mb-4 text-lg">{t.roi}</label>
-                <div className="flex items-center gap-4">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/20">
+                <label className="block text-white font-semibold mb-3 text-lg">{t.roi}</label>
+                <div className="flex items-center gap-3">
                   <button
                     onClick={() => handleInputChange('roi', Math.max(0, Number(simulationInputs.roi) - 1))}
-                    className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20"
+                    className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20 flex-shrink-0"
+                    aria-label="decrease roi"
                   >
-                    <Minus className="w-5 h-5" />
+                    <Minus className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                   <input
                     type="number"
@@ -789,28 +793,30 @@ export const GoalSimulationPage: React.FC = () => {
                       const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0;
                       handleInputChange('roi', value);
                     }}
-                    className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
+                    className="flex-1 px-3 sm:px-4 py-3 sm:py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-base sm:text-lg font-semibold min-w-0"
                     min="0"
                     step="1"
                   />
                   <button
                     onClick={() => handleInputChange('roi', Number(simulationInputs.roi) + 1)}
-                    className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20"
+                    className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20 flex-shrink-0"
+                    aria-label="increase roi"
                   >
-                    <Plus className="w-5 h-5" />
+                    <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
               </div>
 
               {/* Inflation (%) */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                <label className="block text-white font-semibold mb-4 text-lg">{t.inflation}</label>
-                <div className="flex items-center gap-4">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/20">
+                <label className="block text-white font-semibold mb-3 text-lg">{t.inflation}</label>
+                <div className="flex items-center gap-3">
                   <button
                     onClick={() => handleInputChange('inflationRate', Math.max(0, Number(simulationInputs.inflationRate) - 1))}
-                    className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20"
+                    className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20 flex-shrink-0"
+                    aria-label="decrease inflation"
                   >
-                    <Minus className="w-5 h-5" />
+                    <Minus className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                   <input
                     type="number"
@@ -819,28 +825,30 @@ export const GoalSimulationPage: React.FC = () => {
                       const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0;
                       handleInputChange('inflationRate', value);
                     }}
-                    className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
+                    className="flex-1 px-3 sm:px-4 py-3 sm:py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-base sm:text-lg font-semibold min-w-0"
                     min="0"
                     step="1"
                   />
                   <button
                     onClick={() => handleInputChange('inflationRate', Number(simulationInputs.inflationRate) + 1)}
-                    className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20"
+                    className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20 flex-shrink-0"
+                    aria-label="increase inflation"
                   >
-                    <Plus className="w-5 h-5" />
+                    <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
               </div>
 
               {/* One-time Investment */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                <label className="block text-white font-semibold mb-4 text-lg">{t.initialAmount}</label>
-                <div className="flex items-center gap-4">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/20">
+                <label className="block text-white font-semibold mb-3 text-lg">{t.initialAmount}</label>
+                <div className="flex items-center gap-3">
                   <button
                     onClick={() => handleInputChange('initialAmount', Math.max(0, Number(simulationInputs.initialAmount) - 10000))}
-                    className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20"
+                    className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20 flex-shrink-0"
+                    aria-label="decrease initial"
                   >
-                    <Minus className="w-5 h-5" />
+                    <Minus className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                   <input
                     type="number"
@@ -849,28 +857,30 @@ export const GoalSimulationPage: React.FC = () => {
                       const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0;
                       handleInputChange('initialAmount', value);
                     }}
-                    className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
+                    className="flex-1 px-3 sm:px-4 py-3 sm:py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-base sm:text-lg font-semibold min-w-0"
                     min="0"
                     step="1000"
                   />
                   <button
                     onClick={() => handleInputChange('initialAmount', Number(simulationInputs.initialAmount) + 10000)}
-                    className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20"
+                    className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20 flex-shrink-0"
+                    aria-label="increase initial"
                   >
-                    <Plus className="w-5 h-5" />
+                    <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
               </div>
 
               {/* Monthly Investment */}
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                <label className="block text-white font-semibold mb-4 text-lg">{t.monthlyInvestment}</label>
-                <div className="flex items-center gap-4">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/20">
+                <label className="block text-white font-semibold mb-3 text-lg">{t.monthlyInvestment}</label>
+                <div className="flex items-center gap-3">
                   <button
                     onClick={() => handleInputChange('monthlyInvestment', Math.max(0, Number(simulationInputs.monthlyInvestment) - 1000))}
-                    className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20"
+                    className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20 flex-shrink-0"
+                    aria-label="decrease monthly"
                   >
-                    <Minus className="w-5 h-5" />
+                    <Minus className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                   <input
                     type="number"
@@ -879,15 +889,16 @@ export const GoalSimulationPage: React.FC = () => {
                       const value = e.target.value === '' ? 0 : parseInt(e.target.value, 10) || 0;
                       handleInputChange('monthlyInvestment', value);
                     }}
-                    className="flex-1 px-4 py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-lg font-semibold"
+                    className="flex-1 px-3 sm:px-4 py-3 sm:py-4 rounded-xl bg-white/10 border border-white/20 text-white text-center focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-base sm:text-lg font-semibold min-w-0"
                     min="0"
                     step="500"
                   />
                   <button
                     onClick={() => handleInputChange('monthlyInvestment', Number(simulationInputs.monthlyInvestment) + 1000)}
-                    className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20"
+                    className="w-9 h-9 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20 flex-shrink-0"
+                    aria-label="increase monthly"
                   >
-                    <Plus className="w-5 h-5" />
+                    <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
               </div>
@@ -898,7 +909,7 @@ export const GoalSimulationPage: React.FC = () => {
               <Button
                 onClick={runSimulation}
                 size="lg"
-                className="bg-gradient-to-r from-purple-600 to-orange-500 text-white px-12 py-4 text-lg hover:shadow-lg hover:shadow-purple-500/30 transform hover:scale-105 transition-all duration-300 font-semibold"
+                className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-orange-500 text-white px-8 sm:px-12 py-3 sm:py-4 text-lg hover:shadow-lg hover:shadow-purple-500/30 transform hover:scale-105 transition-all duration-300 font-semibold"
               >
                 <Calculator className="w-5 h-5 mr-2" />
                 {t.calculateBtn}
@@ -1003,7 +1014,11 @@ export const GoalSimulationPage: React.FC = () => {
                 <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-100/50">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-xl font-bold text-gray-900">Progress Projection</h3>
-                    <span className="text-sm text-gray-500">{formatPKRk(simulationResult.chartData?.[0]?.amount)}</span>
+                    <span className="text-gray-600 font-semibold">
+                      {simulationResult.from === 'planner'
+                        ? formatPKRk(simulationResult.finalAmount)
+                        : formatPKRk(simulationResult.chartData?.[0]?.amount)}
+                    </span>
                   </div>
                   <div className="h-64 relative">
                     <ResponsiveContainer width="100%" height="100%">
