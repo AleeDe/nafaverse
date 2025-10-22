@@ -54,8 +54,8 @@ class ApiService {
 
   googleLogin() {
     // Spring Security’s OAuth2 entrypoint
-    // window.location.href = 'https://nafaversebackend.onrender.com/oauth2/authorization/google';
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+    window.location.href = 'https://nafaversebackend.onrender.com/oauth2/authorization/google';
+    // window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   }
 
   async requestPasswordReset(email) {
