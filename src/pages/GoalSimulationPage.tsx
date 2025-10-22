@@ -315,7 +315,7 @@ export const GoalSimulationPage: React.FC = () => {
     } else if (err?.response?.status === 429) {
       pushToast({ variant: 'error', title: 'AI quota exceeded', description: 'Please try again later.' });
     } else {
-      pushToast({ variant: 'error', title: 'Failed to generate goal plan', description: 'Please try again later.' });
+      pushToast({ variant: 'error', title: 'Failed to generate goal plan, Please try again later.', description: 'Please try again later.' });
     }
     setPlannerOpen(false);
     return;
@@ -332,7 +332,7 @@ export const GoalSimulationPage: React.FC = () => {
       scrollToSection(resultRef);
     } catch (e: any) {
       setPlannerError(e?.message || 'Something went wrong.');
-      pushToast({ variant: 'error', title: 'Failed to generate goal plan' });
+      pushToast({ variant: 'error', title: 'Failed to generate goal plan, Please try again later.', description: 'Please try again later.' });
     } finally {
       setPlannerLoading(false);
       setAiLoading(false);
