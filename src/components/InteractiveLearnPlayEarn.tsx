@@ -147,6 +147,7 @@ export const InteractiveLearnPlayEarn = () => {
 
               <Button
                 onClick={() => handleProtectedAction('quiz')}
+                onClick={() => navigate('/coming-soon')}
                 className="w-full bg-gradient-to-r from-purple-600 to-orange-500 text-white font-bold text-sm sm:text-base py-2 sm:py-3 px-4 sm:px-6 hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover-target hover-lift"
               >
                 {t.quizCta} <ArrowRight className="w-4 h-4 ml-2" />

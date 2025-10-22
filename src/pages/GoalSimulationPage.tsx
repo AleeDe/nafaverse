@@ -14,6 +14,7 @@ type ApiGoalResult = {
   goalName?: string;
   city?: string;
   estimatedCost?: number;
+  totalInvestment?: number;
   targetYear?: number;
   monthlySavingRequired?: number;
   roiRate?: number;
@@ -188,6 +189,21 @@ export const GoalSimulationPage: React.FC = () => {
   const SIM_FIXED_PROMPT =
     'Use PKR. Start from the current year. Output strictly valid JSON.';
 
+  // Append pilgrimage cost guidance when the context mentions Hajj or Umrah
+  const buildPrompt = (base: string, context?: string) => {
+    const ctx = (context || '').toLowerCase();
+    const additions: string[] = [];
+    // Only add these definitive cost notes when the context explicitly references them
+    if (ctx.includes('hajj') || ctx.includes('haj')) {
+      additions.push('Note: use PKR 1,200,000 as the current typical cost estimate for Hajj (adjust only for clear regional differences).');
+    }
+    if (ctx.includes('umrah') || ctx.includes('umrah')) {
+      additions.push('Note: use PKR 400,000 as the current typical cost estimate for Umrah (adjust only for clear regional differences).');
+    }
+    if (additions.length === 0) return base;
+    return `${base} ${additions.join(' ')}`;
+  };
+
   // Normalize API responses to one shape the UI understands
   const unifyFromGoalApi = (data: ApiGoalResult): UnifiedResult => {
     console.log(data);
@@ -281,7 +297,7 @@ export const GoalSimulationPage: React.FC = () => {
         goalName: computedGoalName,
         city: plannerCity,
         targetYear: plannerYear,
-        prompt: GOAL_FIXED_PROMPT,
+        prompt: buildPrompt(GOAL_FIXED_PROMPT, computedGoalName),
       };
 
       // Sync duration with target year (UI only)
@@ -464,7 +480,8 @@ export const GoalSimulationPage: React.FC = () => {
       monthlyInvestment,
       roiRate: roi,
       inflationRate,
-      prompt: SIM_FIXED_PROMPT,
+      // include pilgrimage costs only when the context mentions Hajj/Umrah
+      prompt: buildPrompt(SIM_FIXED_PROMPT, `${simulationInputs.city} ${goalSearchQuery} ${searchQuery}`),
     };
 
     const token = localStorage.getItem('token');

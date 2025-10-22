@@ -148,6 +148,14 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route 
+            path="/coming-soon" 
+            element={
+              <div style={{ position: 'relative', zIndex: 9999 }}>
+                <ComingSoonPage />
+              </div>
+            } 
+          />
           <Route
             path="/goal-simulation"
             element={
@@ -158,7 +166,11 @@ function App() {
           />
           <Route path="/coming-soon" element={<ComingSoonPage />} />
         </Routes>
-        <Footer />
+        {/* Only show footer on non-coming-soon pages */}
+        <Routes>
+          <Route path="/coming-soon" element={null} />
+          <Route path="*" element={<Footer />} />
+        </Routes>
       </BrowserRouter>
     </DashboardProvider>
   );

@@ -35,8 +35,8 @@ export function Contact(props: { currentLanguage: 'en' | 'ur' }) {
 
   const content = {
     en: {
-      title: "Get in Touch",
-      subtitle: "Have questions? We'd love to hear from you.",
+      title: "Give Us Feedback",
+      subtitle: "Have feedback? We'd love to hear from you.",
       email: "support@nafaverse.com",
       phone: "+92 300 1234567",
       address: "Karachi, Pakistan",
@@ -44,23 +44,23 @@ export function Contact(props: { currentLanguage: 'en' | 'ur' }) {
         name: "Your Name",
         email: "Your Email",
         message: "Your Message",
-        send: "Send Message"
+        send: "Send Feedback"
       },
       contactInfo: "Contact Information"
     },
     ur: {
-      title: "Raabta mein rahain",
-      subtitle: "Koi sawal? Hum sun’na pasand karte hain.",
+      title: "ہمیں فیڈبیک دیں",
+      subtitle: "فیڈبیک ہے؟ ہم سننے کے لیے بے تاب ہیں۔",
       email: "support@nafaverse.com",
       phone: "+92 300 1234567",
       address: "Karachi, Pakistan",
       form: {
-        name: "Aap ka Naam",
-        email: "Aap ka Email",
-        message: "Aap ka Paighaam",
-        send: "Paighaam bhejain"
+        name: "آپ کا نام",
+        email: "آپ کا ای میل",
+        message: "آپ کا پیغام",
+        send: "فیڈبیک بھیجیں"
       },
-      contactInfo: "Raabta ki Maloomat"
+      contactInfo: "رابطہ کی معلومات"
     }
   } as const;
 
