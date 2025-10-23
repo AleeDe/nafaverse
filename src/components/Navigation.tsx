@@ -61,10 +61,6 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
       navigate("/about");
     } else if (item === "contact") {
       navigate("/contact");
-    } else if (item === "moneyTracking") {
-      navigate("/money-tracking");
-    } else if (item === "growAndLearn") {
-      navigate("/grow-and-learn");
     }
   };
 
@@ -122,26 +118,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
             >
               {t.contact}
             </button>
-            <button
-              onClick={() => handleNavClick("moneyTracking")}
-              className={`text-sm font-medium transition-all ${
-                location.pathname === "/money-tracking"
-                  ? "text-[#A786DF]"
-                  : "text-white hover:text-[#A786DF]"
-              }`}
-            >
-              {t.moneyTracking}
-            </button>
-            <button
-              onClick={() => handleNavClick("growAndLearn")}
-              className={`text-sm font-medium transition-all ${
-                location.pathname === "/grow-and-learn"
-                  ? "text-[#A786DF]"
-                  : "text-white hover:text-[#A786DF]"
-              }`}
-            >
-              {t.growAndLearn}
-            </button>
+            
           </div>
 
           {/* Right Side */}

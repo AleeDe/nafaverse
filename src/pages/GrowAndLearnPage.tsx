@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Play, CheckCircle, Clock, Award, X } from 'lucide-react';
+import { Play, CheckCircle, Clock, Award, X, User } from 'lucide-react';
+import { useDashboard } from '../components/DashboardContext';
+import { DashboardSheet } from '../components/DashboardSheet';
 import { videos, quizzes } from '../data/learnData';
 import { Video, Quiz, VideoProgress } from '../types/learn';
-import { loadVideoProgress, updateVideoProgress, getVideoProgress } from '../utils/learnStorage';
+import { loadVideoProgress, updateVideoProgress } from '../utils/learnStorage';
 
 const GrowAndLearnPage: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
@@ -60,12 +62,32 @@ const GrowAndLearnPage: React.FC = () => {
     return Math.round((completed / videos.length) * 100);
   };
 
+  const { dashboardOpen, setDashboardOpen } = useDashboard();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-green-50 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-green-50 py-12 px-4 pt-28 sm:pt-24">
+      {/* Dashboard Toggle + Sheet */}
+      {!dashboardOpen && (
+        <div className="fixed top-[80px] left-[30px] z-[1100]">
+          <button
+            onClick={() => setDashboardOpen(true)}
+            className="bg-gradient-to-br from-purple-400 to-blue-500 text-white w-12 h-11 flex items-center justify-center rounded-xl shadow-lg hover:shadow-blue-500/30 transition-shadow"
+            aria-label="Open Dashboard"
+          >
+            <User className="w-6 h-6" />
+          </button>
+        </div>
+      )}
+      <DashboardSheet />
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-slate-800 mb-2">Grow & Learn</h1>
           <p className="text-slate-600">Enhance your financial knowledge with our curated video library</p>
+          <div className="mt-3">
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 p-3 rounded-md text-sm">
+              Note: This page is currently in a working phase. Progress is stored locally in your browser (localStorage) and may be cleared if you clear your browser data or switch devices.
+            </div>
+          </div>
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Plus, Trash2, DollarSign, TrendingUp, TrendingDown, Target } from 'lucide-react';
+import { Plus, Trash2, DollarSign, TrendingUp, TrendingDown, Target, User } from 'lucide-react';
+import { useDashboard } from '../components/DashboardContext';
+import { DashboardSheet } from '../components/DashboardSheet';
 import { Transaction, Category, TransactionType, Budget, BudgetStatus } from '../types/money';
-import { loadTransactions, saveTransactions, addTransaction, deleteTransaction, loadBudgets, saveBudgets } from '../utils/moneyStorage';
+import { loadTransactions, addTransaction, deleteTransaction, loadBudgets, saveBudgets } from '../utils/moneyStorage';
 import { generateInsights } from '../utils/moneyInsights';
 
 const CATEGORIES: Category[] = ['Food', 'Transport', 'Shopping', 'Education', 'Bills', 'Others'];
@@ -109,12 +111,32 @@ const MoneyTrackingPage: React.FC = () => {
 
   const insights = generateInsights(transactions, budgetStatuses);
 
+  const { dashboardOpen, setDashboardOpen } = useDashboard();
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-white to-[#f3e8ff] py-12 px-4 pt-28 sm:pt-24">
+      {/* Dashboard Toggle + Sheet */}
+      {!dashboardOpen && (
+        <div className="fixed top-[80px] left-[30px] z-[1100]">
+          <button
+            onClick={() => setDashboardOpen(true)}
+            className="bg-gradient-to-br from-purple-400 to-blue-500 text-white w-12 h-11 flex items-center justify-center rounded-xl shadow-lg hover:shadow-blue-500/30 transition-shadow"
+            aria-label="Open Dashboard"
+          >
+            <User className="w-6 h-6" />
+          </button>
+        </div>
+      )}
+      <DashboardSheet />
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-800 mb-2">Money Tracking</h1>
-          <p className="text-slate-600">Manage your finances with ease</p>
+        <div className="mb-6 pt-2">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-2">Money Tracking</h1>
+          <p className="text-sm sm:text-base text-gray-600">Manage your finances with ease</p>
+          <div className="mt-3">
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 p-3 rounded-md text-sm">
+              Note: This page is currently in a working phase. Data is stored locally in your browser (localStorage) and may be cleared if you clear your browser data or use a different device.
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -123,7 +145,7 @@ const MoneyTrackingPage: React.FC = () => {
               <span className="text-slate-600">Total Income</span>
               <TrendingUp className="text-green-500" size={24} />
             </div>
-            <p className="text-3xl font-bold text-slate-800">${totalIncome.toFixed(2)}</p>
+            <p className="text-3xl font-bold text-slate-800">PKR {totalIncome.toFixed(2)}</p>
           </div>
 
           <div className="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-red-500">
@@ -131,7 +153,7 @@ const MoneyTrackingPage: React.FC = () => {
               <span className="text-slate-600">Total Expenses</span>
               <TrendingDown className="text-red-500" size={24} />
             </div>
-            <p className="text-3xl font-bold text-slate-800">${totalExpenses.toFixed(2)}</p>
+            <p className="text-3xl font-bold text-slate-800">PKR {totalExpenses.toFixed(2)}</p>
           </div>
 
           <div className={`bg-white rounded-2xl shadow-lg p-6 border-l-4 ${balance >= 0 ? 'border-blue-500' : 'border-orange-500'}`}>
@@ -140,7 +162,7 @@ const MoneyTrackingPage: React.FC = () => {
               <DollarSign className={balance >= 0 ? 'text-blue-500' : 'text-orange-500'} size={24} />
             </div>
             <p className={`text-3xl font-bold ${balance >= 0 ? 'text-slate-800' : 'text-orange-600'}`}>
-              ${balance.toFixed(2)}
+              PKR {balance.toFixed(2)}
             </p>
           </div>
         </div>
@@ -170,12 +192,16 @@ const MoneyTrackingPage: React.FC = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    label={(props: any) => {
+                      const name = props?.name ?? '';
+                      const percent = props?.percent ?? 0;
+                      return `${name} ${((percent) * 100).toFixed(0)}%`;
+                    }}
                     outerRadius={100}
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {categoryData.map((entry, index) => (
+                    {categoryData.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -212,7 +238,7 @@ const MoneyTrackingPage: React.FC = () => {
                   <div className="flex justify-between mb-2">
                     <span className="font-medium text-slate-700">{status.category}</span>
                     <span className="text-slate-600">
-                      ${status.spent.toFixed(2)} / ${status.limit.toFixed(2)}
+                      PKR {status.spent.toFixed(2)} / PKR {status.limit.toFixed(2)}
                     </span>
                   </div>
                   <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
@@ -231,22 +257,25 @@ const MoneyTrackingPage: React.FC = () => {
         )}
 
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4">
             <h3 className="text-xl font-bold text-slate-800">Transactions</h3>
-            <div className="flex gap-3">
+            {/* Buttons moved under heading and made smaller */}
+            <div className="flex gap-3 w-full sm:w-auto">
               <button
                 onClick={() => setShowBudgetForm(!showBudgetForm)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition flex items-center gap-2"
+                className="w-full sm:w-auto px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition flex items-center gap-2 justify-center text-sm"
               >
-                <Target size={20} />
-                Set Budget
+                <Target size={16} />
+                <span className="hidden sm:inline">Set Budget</span>
+                <span className="sm:hidden">Budget</span>
               </button>
               <button
                 onClick={() => setShowForm(!showForm)}
-                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition flex items-center gap-2"
+                className="w-full sm:w-auto px-3 py-1.5 bg-green-500 text-white rounded-md hover:bg-green-600 transition flex items-center gap-2 justify-center text-sm"
               >
-                <Plus size={20} />
-                Add Transaction
+                <Plus size={16} />
+                <span className="hidden sm:inline">Add Transaction</span>
+                <span className="sm:hidden">Add</span>
               </button>
             </div>
           </div>
@@ -260,7 +289,7 @@ const MoneyTrackingPage: React.FC = () => {
                   <select
                     value={budgetCategory}
                     onChange={(e) => setBudgetCategory(e.target.value as Category)}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                   >
                     {CATEGORIES.map(cat => (
                       <option key={cat} value={cat}>{cat}</option>
@@ -268,13 +297,13 @@ const MoneyTrackingPage: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Limit ($)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Limit (PKR)</label>
                   <input
                     type="number"
                     step="0.01"
                     value={budgetLimit}
                     onChange={(e) => setBudgetLimit(e.target.value)}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black placeholder:text-slate-400"
                     required
                   />
                 </div>
@@ -306,18 +335,18 @@ const MoneyTrackingPage: React.FC = () => {
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black placeholder:text-slate-400"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Amount ($)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Amount (PKR)</label>
                   <input
                     type="number"
                     step="0.01"
                     value={formData.amount}
                     onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black placeholder:text-slate-400"
                     required
                   />
                 </div>
@@ -326,7 +355,7 @@ const MoneyTrackingPage: React.FC = () => {
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value as Category })}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                   >
                     {CATEGORIES.map(cat => (
                       <option key={cat} value={cat}>{cat}</option>
@@ -338,7 +367,7 @@ const MoneyTrackingPage: React.FC = () => {
                   <select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value as TransactionType })}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
                   >
                     <option value="Expense">Expense</option>
                     <option value="Income">Income</option>
@@ -350,7 +379,7 @@ const MoneyTrackingPage: React.FC = () => {
                     type="date"
                     value={formData.date}
                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black placeholder:text-slate-400"
                     required
                   />
                 </div>
@@ -379,12 +408,12 @@ const MoneyTrackingPage: React.FC = () => {
             ) : (
               transactions.map(transaction => (
                 <div
-                  key={transaction.id}
-                  className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:shadow-md transition"
-                >
-                  <div className="flex-1">
-                    <h4 className="font-medium text-slate-800">{transaction.title}</h4>
-                    <div className="flex gap-3 mt-1">
+                    key={transaction.id}
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-slate-50 rounded-lg hover:shadow-md transition"
+                  >
+                    <div className="flex-1 min-w-0 mb-3 sm:mb-0">
+                    <h4 className="font-medium text-slate-800 truncate">{transaction.title}</h4>
+                    <div className="flex flex-wrap gap-2 mt-2 items-center">
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         transaction.type === 'Income'
                           ? 'bg-green-100 text-green-700'
@@ -398,11 +427,11 @@ const MoneyTrackingPage: React.FC = () => {
                       <span className="text-xs text-slate-500">{transaction.date}</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 ml-0 sm:ml-4">
                     <span className={`text-lg font-bold ${
                       transaction.type === 'Income' ? 'text-green-600' : 'text-red-600'
                     }`}>
-                      {transaction.type === 'Income' ? '+' : '-'}${transaction.amount.toFixed(2)}
+                      {transaction.type === 'Income' ? '+' : '-'} PKR {transaction.amount.toFixed(2)}
                     </span>
                     <button
                       onClick={() => handleDelete(transaction.id)}

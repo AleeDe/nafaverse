@@ -1,8 +1,6 @@
-import React from 'react';
 import { useState } from 'react';
-import { Brain, Target, TrendingUp } from 'lucide-react';
+import { DollarSign as Money, Target, TrendingUp } from 'lucide-react';
 import { useDashboard } from './DashboardContext';
-import { SkeletonLoader } from './SkeletonLoader';
 import { Button } from './ui/button'; // Assuming you have this from shadcn/ui
 import { useNavigate } from 'react-router-dom';
 
@@ -39,11 +37,12 @@ export const JourneySection = () => {
       return;
     }
 
-    // Understand & Grow -> show "coming soon" only for logged-in users,
-    // else prompt login
-    if (stepType === 'understand' || stepType === 'grow') {
+    // Money Tracking & GrowAndLearn -> require login
+    if (stepType === 'moneyTracking' || stepType === 'growAndLearn') {
       if (isAuthenticated) {
-        navigate('/coming-soon');
+        // navigate to the respective pages
+        if (stepType === 'moneyTracking') navigate('/money-tracking');
+        if (stepType === 'growAndLearn') navigate('/grow-and-learn');
       } else {
         setIsLoginMode(true);
         setLoginModalOpen(true);
@@ -58,11 +57,12 @@ export const JourneySection = () => {
     en: {
       journeyTitle: 'Your Journey to Financial Freedom',
       journeySubtitle: 'Three simple steps to transform your financial future',
-      understand: 'Understand',
-      understandDesc: 'Learn investment fundamentals through interactive content.',
       simulate: 'Simulate',
       simulateDesc: 'Practice with virtual portfolios & see real-time market scenarios.',
       grow: 'Grow',
+      growAndLearn: 'Grow & Learn',
+      moneyTracking: 'Money Tracking',
+      moneyDescription: 'Track your expenses, savings, and investments all in one place.',
       growDesc: 'Execute with confidence & track your progress.',
       readyToStart: 'Ready to start? Join today →'
     },
@@ -74,6 +74,9 @@ export const JourneySection = () => {
       simulate: 'Simulate karo',
       simulateDesc: 'Virtual portfolio par practice karo aur real-time market scenarios dekho.',
       grow: 'Grow karo',
+      growAndLearn: 'Seekho aur Barhao',
+      moneyTracking: 'Paisa Tracking',
+      moneyDescription: 'Apne kharchay, bachat, aur sarmayakariyon ko aik jagah track karo.',
       growDesc: 'Aitmaad ke sath amal karo aur apne taraqqi ko track karo.',
       readyToStart: 'Shuru karne ke liye tayyar? Aaj hi shamil hon →'
     }
@@ -83,11 +86,11 @@ export const JourneySection = () => {
 
   const steps = [
     {
-      title: t.understand,
-      description: t.understandDesc,
-      icon: Brain,
+      title: t.moneyTracking,
+      description: t.moneyDescription,
+      icon: Money,
       color: 'from-[#4F46E5] to-[#3B82F6]',
-      type: 'understand'
+      type: 'moneyTracking'
     },
     {
       title: t.simulate,
@@ -97,11 +100,11 @@ export const JourneySection = () => {
       type: 'simulate'
     },
     {
-      title: t.grow,
+      title: t.growAndLearn || 'Grow & Learn',
       description: t.growDesc,
       icon: Target,
       color: 'from-[#F59E0B] to-[#F97316]',
-      type: 'grow'
+      type: 'growAndLearn'
     }
   ];
 
