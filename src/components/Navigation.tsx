@@ -29,6 +29,8 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
       features: "Features",
       about: "About",
       contact: "Contact",
+      moneyTracking: "Money Tracking",
+      growAndLearn: "Grow & Learn",
       login: "Login",
       signup: "Sign Up",
       language: "اردو",
@@ -38,6 +40,8 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
       features: "Khasoosiyat",
       about: "Humare Bare Mein",
       contact: "Raabta",
+      moneyTracking: "Paisa Tracking",
+      growAndLearn: "Seekho Aur Barhao",
       login: "Login",
       signup: "Sign Up",
       language: "English",
@@ -57,6 +61,10 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
       navigate("/about");
     } else if (item === "contact") {
       navigate("/contact");
+    } else if (item === "moneyTracking") {
+      navigate("/money-tracking");
+    } else if (item === "growAndLearn") {
+      navigate("/grow-and-learn");
     }
   };
 
@@ -113,6 +121,26 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
               }`}
             >
               {t.contact}
+            </button>
+            <button
+              onClick={() => handleNavClick("moneyTracking")}
+              className={`text-sm font-medium transition-all ${
+                location.pathname === "/money-tracking"
+                  ? "text-[#A786DF]"
+                  : "text-white hover:text-[#A786DF]"
+              }`}
+            >
+              {t.moneyTracking}
+            </button>
+            <button
+              onClick={() => handleNavClick("growAndLearn")}
+              className={`text-sm font-medium transition-all ${
+                location.pathname === "/grow-and-learn"
+                  ? "text-[#A786DF]"
+                  : "text-white hover:text-[#A786DF]"
+              }`}
+            >
+              {t.growAndLearn}
             </button>
           </div>
 
@@ -238,6 +266,32 @@ export const Navigation: React.FC<NavigationProps> = ({ onScrollToSection }) => 
               }`}
             >
               {t.contact}
+            </button>
+            <button
+              onClick={() => {
+                handleNavClick("moneyTracking");
+                setIsMobileMenuOpen(false);
+              }}
+              className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${
+                location.pathname === "/money-tracking"
+                  ? "bg-[#A786DF]/20 text-[#A786DF]"
+                  : "text-white hover:bg-white/10 hover:text-[#A786DF]"
+              }`}
+            >
+              {t.moneyTracking}
+            </button>
+            <button
+              onClick={() => {
+                handleNavClick("growAndLearn");
+                setIsMobileMenuOpen(false);
+              }}
+              className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${
+                location.pathname === "/grow-and-learn"
+                  ? "bg-[#A786DF]/20 text-[#A786DF]"
+                  : "text-white hover:bg-white/10 hover:text-[#A786DF]"
+              }`}
+            >
+              {t.growAndLearn}
             </button>
           </div>
 

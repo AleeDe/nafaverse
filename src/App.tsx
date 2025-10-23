@@ -17,6 +17,8 @@ import { Footer } from './components/Footer';
 import { ProtectedRoute } from './components/routing/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import { ComingSoonPage } from './pages/ComingSoonPage';
+import MoneyTrackingPage from './pages/MoneyTrackingPage';
+import GrowAndLearnPage from './pages/GrowAndLearnPage';
 
 // Custom Cursor Component
 function CustomCursor() {
@@ -164,6 +166,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/money-tracking" element={<MoneyTrackingPage />} />
+          <Route path="/grow-and-learn" element={<GrowAndLearnPage />} />
           <Route path="/coming-soon" element={<ComingSoonPage />} />
         </Routes>
         {/* Only show footer on non-coming-soon pages */}
