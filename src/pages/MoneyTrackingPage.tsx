@@ -22,6 +22,30 @@ const CATEGORY_META: Record<Category, { icon: string; color: string }> = {
 };
 
 const MoneyTrackingPage: React.FC = () => {
+  // Simple custom select to avoid native white dropdowns on some OSes
+  const CustomSelect: React.FC<{
+    value: string;
+    onChange: (v: string) => void;
+    options: string[];
+    className?: string;
+  }> = ({ value, onChange, options, className }) => {
+    const [open, setOpen] = useState(false);
+    return (
+      <div className={`relative ${className ?? ''}`}>
+        <button type="button" onClick={() => setOpen(!open)} className="w-full text-left px-4 py-2 border border-white/10 rounded-lg bg-transparent text-white flex items-center justify-between">
+          <span>{value}</span>
+          <svg className="w-4 h-4 opacity-80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </button>
+        {open && (
+          <div className="absolute z-50 mt-2 w-full bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81] border border-white/10 rounded-lg shadow-lg"> 
+            {options.map(opt => (
+              <div key={opt} onClick={() => { onChange(opt); setOpen(false); }} className="px-4 py-2 hover:bg-white/5 cursor-pointer text-white">{opt}</div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -333,28 +357,25 @@ const MoneyTrackingPage: React.FC = () => {
 
           {showBudgetForm && (
             <form onSubmit={handleBudgetSubmit} className="mb-6 p-6 bg-[rgba(255,255,255,0.04)] rounded-xl">
-              <h4 className="font-bold text-slate-800 mb-4">Set Category Budget</h4>
+              <h4 className="font-bold text-white mb-4">Set Category Budget</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Category</label>
-                  <select
+                  <label className="block text-sm font-medium text-white/90 mb-2">Category</label>
+                  <CustomSelect
                     value={budgetCategory}
-                    onChange={(e) => setBudgetCategory(e.target.value as Category)}
-                    className="w-full px-4 py-2 border border-white/10 rounded-lg focus:ring-2 focus:ring-[rgba(167,134,223,0.3)] focus:border-transparent bg-white/3 text-white"
-                  >
-                    {CATEGORIES.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
+                    onChange={(v) => setBudgetCategory(v as Category)}
+                    options={CATEGORIES}
+                    className="w-full"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Limit (PKR)</label>
+                  <label className="block text-sm font-medium text-white/90 mb-2">Limit (PKR)</label>
                   <input
                     type="number"
                     step="0.01"
                     value={budgetLimit}
                     onChange={(e) => setBudgetLimit(e.target.value)}
-                    className="w-full px-4 py-2 border border-white/10 rounded-lg focus:ring-2 focus:ring-[rgba(167,134,223,0.3)] focus:border-transparent bg-white/3 text-white placeholder:text-white/60"
+                    className="w-full px-4 py-2 border border-white/10 rounded-lg focus:ring-2 focus:ring-[rgba(167,134,223,0.3)] focus:border-transparent bg-transparent text-white placeholder:text-white/60"
                     required
                   />
                 </div>
@@ -381,51 +402,48 @@ const MoneyTrackingPage: React.FC = () => {
             <form onSubmit={handleSubmit} className="mb-6 p-6 bg-[rgba(255,255,255,0.03)] rounded-xl">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Title</label>
+                  <label className="block text-sm font-medium text-white/90 mb-2">Title</label>
                   <input
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     className="w-full px-4 py-2 border border-white/10 rounded-lg focus:ring-2 focus:ring-[rgba(167,134,223,0.3)] focus:border-transparent bg-transparent text-white placeholder:text-white/60"
+                    placeholder="e.g., Grocery shopping"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Amount (PKR)</label>
+                  <label className="block text-sm font-medium text-white/90 mb-2">Amount (PKR)</label>
                   <input
                     type="number"
                     step="0.01"
                     value={formData.amount}
                     onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                     className="w-full px-4 py-2 border border-white/10 rounded-lg focus:ring-2 focus:ring-[rgba(167,134,223,0.3)] focus:border-transparent bg-transparent text-white placeholder:text-white/60"
+                    placeholder="0.00"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Category</label>
-                  <select
+                  <label className="block text-sm font-medium text-white/90 mb-2">Category</label>
+                  <CustomSelect
                     value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value as Category })}
-                    className="w-full px-4 py-2 border border-white/10 rounded-lg focus:ring-2 focus:ring-[rgba(167,134,223,0.3)] focus:border-transparent bg-transparent text-white"
-                  >
-                    {CATEGORIES.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
+                    onChange={(v) => setFormData({ ...formData, category: v as Category })}
+                    options={CATEGORIES}
+                    className="w-full"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Type</label>
-                  <select
+                  <label className="block text-sm font-medium text-white/90 mb-2">Type</label>
+                  <CustomSelect
                     value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value as TransactionType })}
-                    className="w-full px-4 py-2 border border-white/10 rounded-lg focus:ring-2 focus:ring-[rgba(167,134,223,0.3)] focus:border-transparent bg-transparent text-white"
-                  >
-                    <option value="Expense">Expense</option>
-                    <option value="Income">Income</option>
-                  </select>
+                    onChange={(v) => setFormData({ ...formData, type: v as TransactionType })}
+                    options={[ 'Expense', 'Income' ]}
+                    className="w-full"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Date</label>
+                  <label className="block text-sm font-medium text-white/90 mb-2">Date</label>
                   <input
                     type="date"
                     value={formData.date}
