@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Play, CheckCircle, Clock, Award, X, User } from 'lucide-react';
+import { ResponsiveContainer, LineChart, Line } from 'recharts';
 import { useDashboard } from '../components/DashboardContext';
 import { DashboardSheet } from '../components/DashboardSheet';
 import { videos, quizzes } from '../data/learnData';
@@ -65,7 +66,7 @@ const GrowAndLearnPage: React.FC = () => {
   const { dashboardOpen, setDashboardOpen } = useDashboard();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-green-50 py-12 px-4 pt-28 sm:pt-24">
+    <div className="min-h-screen py-12 px-4 pt-28 sm:pt-24 bg-gradient-to-br from-[#1E1B4B] via-[#0F0A2E] to-[#312E81] text-white">
       {/* Dashboard Toggle + Sheet */}
       {!dashboardOpen && (
         <div className="fixed top-[80px] left-[30px] z-[1100]">
@@ -81,8 +82,8 @@ const GrowAndLearnPage: React.FC = () => {
       <DashboardSheet />
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-800 mb-2">Grow & Learn</h1>
-          <p className="text-slate-600">Enhance your financial knowledge with our curated video library</p>
+          <h1 className="text-4xl font-bold text-white mb-2">Grow & Learn</h1>
+          <p className="text-slate-300">Enhance your financial knowledge with our curated video library</p>
           <div className="mt-3">
             <div className="bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 p-3 rounded-md text-sm">
               Note: This page is currently in a working phase. Progress is stored locally in your browser (localStorage) and may be cleared if you clear your browser data or switch devices.
@@ -90,22 +91,23 @@ const GrowAndLearnPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
+        <div className="nv-card p-6 mb-8 relative overflow-hidden">
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#7C3AED] to-[#06B6D4] opacity-80" />
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-xl font-bold text-slate-800 mb-2">Your Learning Progress</h3>
-              <p className="text-slate-600">
+              <h3 className="text-xl font-bold text-white mb-2">Your Learning Progress</h3>
+              <p className="text-slate-300">
                 {videoProgress.filter(p => p.completed && p.quizPassed).length} of {videos.length} courses completed
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Award className="text-yellow-500" size={48} />
-              <span className="text-4xl font-bold text-slate-800">{calculateOverallProgress()}%</span>
+              <Award className="text-yellow-400" size={44} />
+              <span className="text-4xl font-bold text-white">{calculateOverallProgress()}%</span>
             </div>
           </div>
-          <div className="w-full bg-slate-200 rounded-full h-4 mt-4">
+          <div className="w-full bg-white/5 rounded-full h-4 mt-4">
             <div
-              className="bg-gradient-to-r from-green-500 to-blue-500 h-4 rounded-full transition-all"
+              className="bg-gradient-to-r from-green-400 to-blue-400 h-4 rounded-full transition-all"
               style={{ width: `${calculateOverallProgress()}%` }}
             />
           </div>
@@ -158,53 +160,56 @@ const GrowAndLearnPage: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {videos.map(video => {
+            {videos.map((video, idx) => {
               const progress = getVideoProgressData(video.id);
               return (
                 <div
                   key={video.id}
-                  className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition cursor-pointer"
+                  className="nv-card overflow-hidden hover:shadow-xl transition cursor-pointer animate-scaleIn"
+                  style={{ animationDelay: `${Math.min(0.5, idx * 0.06)}s` }}
                   onClick={() => setSelectedVideo(video)}
                 >
                   <div className="relative">
                     <img
                       src={video.thumbnail}
                       alt={video.title}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-40 object-cover"
                     />
-                    <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center group-hover:bg-opacity-50 transition">
-                      <Play className="text-white" size={48} />
+                    <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center transition">
+                      <Play className="text-white" size={44} />
                     </div>
                     {progress?.completed && progress?.quizPassed && (
                       <div className="absolute top-3 right-3 bg-green-500 rounded-full p-2">
-                        <CheckCircle className="text-white" size={20} />
+                        <CheckCircle className="text-white" size={18} />
                       </div>
                     )}
                   </div>
                   <div className="p-4">
-                    <h3 className="font-bold text-slate-800 mb-2">{video.title}</h3>
-                    <p className="text-sm text-slate-600 mb-3 line-clamp-2">{video.description}</p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
-                        {video.category}
-                      </span>
-                      <span className="text-xs text-slate-500 flex items-center gap-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-bold text-white truncate">{video.title}</h3>
+                      <span className="text-xs text-slate-300 flex items-center gap-1">
                         <Clock size={12} />
                         {video.duration}
                       </span>
                     </div>
-                    {progress?.quizScore !== undefined && (
-                      <div className="mt-3 pt-3 border-t border-slate-200">
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-slate-600">Quiz Score</span>
-                          <span className={`text-xs font-bold ${
-                            progress.quizPassed ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {progress.quizScore.toFixed(0)}%
-                          </span>
+                    <p className="text-sm text-slate-300 mb-3 line-clamp-2">{video.description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs px-2 py-1 bg-white/5 text-white rounded-full">{video.category}</span>
+                      {progress?.quizScore !== undefined ? (
+                        <div className="flex items-center gap-3">
+                          <div className={`text-xs font-bold ${progress.quizPassed ? 'text-green-300' : 'text-red-300'}`}>{progress.quizScore.toFixed(0)}%</div>
+                          <div style={{width:80,height:30}}>
+                            <ResponsiveContainer width="100%" height={30}>
+                              <LineChart data={[{v:progress.quizScore || 0}]}> 
+                                <Line dataKey="v" stroke={progress.quizPassed ? '#34D399' : '#F87171'} strokeWidth={2} dot={false} />
+                              </LineChart>
+                            </ResponsiveContainer>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      ) : (
+                        <div className="text-xs text-slate-400">Not attempted</div>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
