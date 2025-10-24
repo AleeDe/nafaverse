@@ -42,7 +42,7 @@ export const JourneySection = () => {
       if (isAuthenticated) {
         // navigate to the respective pages
         if (stepType === 'moneyTracking') navigate('/money-tracking');
-        if (stepType === 'growAndLearn') navigate('/grow-and-learn');
+        if (stepType === 'growAndLearn') navigate('/coming-soon');
       } else {
         setIsLoginMode(true);
         setLoginModalOpen(true);
