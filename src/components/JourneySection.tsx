@@ -139,6 +139,11 @@ export const JourneySection = () => {
                         <step.icon className="w-6 h-6" />
                       </div>
                       <h3 className="text-lg sm:text-xl font-bold">{step.title}</h3>
+                      {step.type === 'growAndLearn' && (
+                        <div className="mt-2">
+                          <span className="inline-block text-xs px-3 py-1 rounded-full bg-white/10 text-white font-semibold">Coming soon</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
