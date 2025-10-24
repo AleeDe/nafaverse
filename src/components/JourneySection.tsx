@@ -57,7 +57,7 @@ export const JourneySection = () => {
     en: {
       journeyTitle: 'Your Journey to Financial Freedom',
       journeySubtitle: 'Three simple steps to transform your financial future',
-      simulate: 'Simulate',
+      simulate: 'Goal and Simulate',
       simulateDesc: 'Practice with virtual portfolios & see real-time market scenarios.',
       grow: 'Grow',
       growAndLearn: 'Grow & Learn',
@@ -138,12 +138,12 @@ export const JourneySection = () => {
                       <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center mb-2 ${loadingStep === index ? 'animate-spin' : 'animate-pulse-custom'}`}>
                         <step.icon className="w-6 h-6" />
                       </div>
-                      <h3 className="text-lg sm:text-xl font-bold">{step.title}</h3>
-                      {step.type === 'growAndLearn' && (
-                        <div className="mt-2">
+                      <div className="flex items-center justify-between w-full">
+                        <h3 className="text-lg sm:text-xl font-bold">{step.title}</h3>
+                        {step.type === 'growAndLearn' && (
                           <span className="inline-block text-xs px-3 py-1 rounded-full bg-white/10 text-white font-semibold">Coming soon</span>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
                   </div>
 
