@@ -167,7 +167,7 @@ function App() {
             }
           />
           <Route path="/money-tracking" element={<MoneyTrackingPage />} />
-          <Route path="/coming-soon" element={<GrowAndLearnPage />} />
+          <Route path="/grow-and-learn" element={<ComingSoonPage />} />
           <Route path="/coming-soon" element={<ComingSoonPage />} />
         </Routes>
         {/* Only show footer on non-coming-soon pages */}
